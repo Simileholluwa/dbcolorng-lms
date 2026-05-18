@@ -12,13 +12,13 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
   return (
-    <div className="min-h-screen flex items-start justify-start pt-20 lg:pt-0 lg:items-center md:justify-center p-4 relative overflow-hidden bg-gradient-to-br from-[#A3D14B]/20 via-white to-[#0B5B43]/10">
+    <div className="min-h-screen flex items-start justify-start pt-20 lg:pt-0 lg:items-center md:justify-center p-4 relative overflow-hidden">
       <motion.div
         layout
         transition={{ type: "spring", stiffness: 150, damping: 25 }}
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative z-10 w-full max-w-[440px] bg-white/40 backdrop-blur-[40px] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white/60 p-8 md:p-10 text-center"
+        className="relative z-10 w-full max-w-[440px] bg-white/40 backdrop-blur-[40px] rounded-2xl shadow-xs border border-black/5 dark:border-white/5 p-8 md:p-10 text-center"
       >
         <header className="mb-8 flex flex-col items-center">
           {/* Top Icon */}
