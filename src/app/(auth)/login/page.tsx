@@ -21,7 +21,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const { login, isLoggingIn } = useAuth();
   const [showPassword, setShowPassword] = React.useState(false);
-  
+
   const {
     register,
     handleSubmit,
@@ -35,15 +35,15 @@ export default function LoginPage() {
   };
 
   return (
-    <AuthLayout 
-      title="Sign in with email" 
+    <AuthLayout
+      title="Sign in with email"
       subtitle="Begin your interior design journey with dbcolorsNG"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-1">
-          <Input 
-            type="email" 
-            placeholder="Email" 
+          <Input
+            type="email"
+            placeholder="Email"
             icon={Mail}
             {...register("email")}
             className={errors.email ? "border-red-500" : ""}
@@ -55,15 +55,15 @@ export default function LoginPage() {
 
         <div className="space-y-1">
           <div className="relative">
-            <Input 
+            <Input
               type={showPassword ? "text" : "password"}
-              placeholder="Password" 
+              placeholder="Password"
               icon={Lock}
               {...register("password")}
               className={errors.password ? "border-red-500" : ""}
               rightElement={
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="focus:outline-none"
                 >
@@ -87,11 +87,11 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <Button 
+        <Button
           type="submit"
-          size="lg" 
+          size="lg"
           disabled={isLoggingIn}
-          className="w-full h-15 mt-6 text-base font-bold"
+          className="w-full h-15 cursor-pointer bg-black dark:bg-white text-white dark:text-black mt-6 text-base font-bold"
         >
           {isLoggingIn ? <Loader2 className="w-5 h-5 animate-spin" /> : "Continue to dashboard"}
         </Button>

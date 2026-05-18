@@ -29,7 +29,7 @@ export default function VerifyEmailSentPage() {
           </p>
           <Button
             size="lg"
-            className="w-full h-15 text-base font-bold"
+            className="w-full h-15 cursor-pointer bg-black dark:bg-white text-white dark:text-black text-base font-bold"
             onClick={handleResend}
             disabled={isResending || !user?.email}
           >
@@ -40,7 +40,7 @@ export default function VerifyEmailSentPage() {
         <div className="text-center pt-2">
           <Link
             href="/login"
-            className="inline-flex items-center text-sm text-neutral-500 hover:text-black transition-colors font-semibold gap-2"
+            className="inline-flex items-center text-sm text-neutral-500 hover:text-black dark:hover:text-white transition-colors font-semibold gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to login

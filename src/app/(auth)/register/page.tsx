@@ -23,7 +23,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 export default function RegisterPage() {
   const { register: registerUser, isRegistering } = useAuth();
   const [showPassword, setShowPassword] = React.useState(false);
-  
+
   const {
     register,
     handleSubmit,
@@ -41,15 +41,15 @@ export default function RegisterPage() {
   };
 
   return (
-    <AuthLayout 
-      title="Create Account" 
+    <AuthLayout
+      title="Create Account"
       subtitle="Join dbcolorsNG and start your creative journey today."
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <Input 
-              placeholder="First Name" 
+            <Input
+              placeholder="First Name"
               icon={User}
               {...register("firstName")}
               className={errors.firstName ? "border-red-500" : ""}
@@ -59,8 +59,8 @@ export default function RegisterPage() {
             )}
           </div>
           <div className="space-y-1">
-            <Input 
-              placeholder="Last Name" 
+            <Input
+              placeholder="Last Name"
               icon={User}
               {...register("lastName")}
               className={errors.lastName ? "border-red-500" : ""}
@@ -72,9 +72,9 @@ export default function RegisterPage() {
         </div>
 
         <div className="space-y-1">
-          <Input 
-            type="email" 
-            placeholder="Email" 
+          <Input
+            type="email"
+            placeholder="Email"
             icon={Mail}
             {...register("email")}
             className={errors.email ? "border-red-500" : ""}
@@ -85,15 +85,15 @@ export default function RegisterPage() {
         </div>
 
         <div className="space-y-1">
-          <Input 
+          <Input
             type={showPassword ? "text" : "password"}
-            placeholder="Password" 
+            placeholder="Password"
             icon={Lock}
             {...register("password")}
             className={errors.password ? "border-red-500" : ""}
             rightElement={
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="focus:outline-none"
               >
@@ -110,11 +110,11 @@ export default function RegisterPage() {
           )}
         </div>
 
-        <Button 
+        <Button
           type="submit"
-          size="lg" 
+          size="lg"
           disabled={isRegistering}
-          className="w-full h-15 mt-6 text-base font-bold"
+          className="w-full h-15 cursor-pointer bg-black dark:bg-white text-white dark:text-black mt-6 text-base font-bold"
         >
           {isRegistering ? <Loader2 className="w-5 h-5 animate-spin" /> : "Get Started"}
         </Button>

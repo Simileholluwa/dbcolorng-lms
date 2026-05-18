@@ -14,7 +14,7 @@ export default function VerifySuccessPage() {
     >
       <div className="space-y-8">
         <Link href="/login" className="block w-full">
-          <Button size="lg" className="w-full h-15 font-bold text-base">
+          <Button size="lg" className="w-full h-15 cursor-pointer bg-black dark:bg-white text-white dark:text-black text-base font-bold">
             Continue to Login
           </Button>
         </Link>
