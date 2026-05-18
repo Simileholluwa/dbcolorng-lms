@@ -68,9 +68,9 @@ export default function LoginPage() {
                   className="focus:outline-none"
                 >
                   {showPassword ? (
-                    <Eye className="w-5 h-5 text-neutral-400 hover:text-black transition-colors" />
+                    <Eye className="w-5 h-5 text-neutral-400 hover:text-black dark:hover:text-white transition-colors" />
                   ) : (
-                    <EyeOff className="w-5 h-5 text-neutral-400 hover:text-black transition-colors" />
+                    <EyeOff className="w-5 h-5 text-neutral-400 hover:text-black dark:hover:text-white transition-colors" />
                   )}
                 </button>
               }
@@ -82,7 +82,7 @@ export default function LoginPage() {
         </div>
 
         <div className="flex justify-end pt-1">
-          <Link href="/forgot-password" title="reset password" className="text-[13px] text-black font-semibold hover:underline">
+          <Link href="/forgot-password" title="reset password" className="text-[13px] text-neutral-900 dark:text-neutral-50 font-semibold hover:underline">
             Forgot password?
           </Link>
         </div>
@@ -97,9 +97,9 @@ export default function LoginPage() {
         </Button>
 
         <div className="text-center mt-4">
-          <p className="text-sm text-neutral-500 font-medium">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-black font-bold hover:underline">
+            <Link href="/register" className="text-neutral-900 dark:text-neutral-50 font-bold hover:underline">
               Create one for free
             </Link>
           </p>

@@ -98,9 +98,9 @@ export default function RegisterPage() {
                 className="focus:outline-none"
               >
                 {showPassword ? (
-                  <Eye className="w-5 h-5 text-neutral-400 hover:text-black transition-colors" />
+                  <Eye className="w-5 h-5 text-neutral-400 hover:text-black dark:hover:text-white transition-colors" />
                 ) : (
-                  <EyeOff className="w-5 h-5 text-neutral-400 hover:text-black transition-colors" />
+                  <EyeOff className="w-5 h-5 text-neutral-400 hover:text-black dark:hover:text-white transition-colors" />
                 )}
               </button>
             }
@@ -120,9 +120,9 @@ export default function RegisterPage() {
         </Button>
 
         <div className="text-center mt-4">
-          <p className="text-sm text-neutral-500 font-medium">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
             Already have an account?{" "}
-            <Link href="/login" className="text-black font-bold hover:underline">
+            <Link href="/login" className="text-neutral-900 dark:text-neutral-50 font-bold hover:underline">
               Sign In
             </Link>
           </p>

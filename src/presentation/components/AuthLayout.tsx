@@ -12,13 +12,13 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
   return (
-    <div className="min-h-screen flex items-start justify-start pt-20 lg:pt-0 lg:items-center md:justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-start justify-start pt-20 lg:pt-0 lg:items-center md:justify-center p-4 relative overflow-hidden bg-white dark:bg-neutral-950">
       <motion.div
         layout
         transition={{ type: "spring", stiffness: 150, damping: 25 }}
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative z-10 w-full max-w-[440px] bg-white/40 backdrop-blur-[40px] rounded-2xl shadow-xs border border-black/5 dark:border-white/5 p-8 md:p-10 text-center"
+        className="relative z-10 w-full max-w-[440px] bg-white dark:bg-neutral-950 rounded-2xl shadow-sm shadow-black/5 dark:shadow-black/20 border border-neutral-100 dark:border-neutral-800 p-8 md:p-10 text-center transition-all duration-300"
       >
         <header className="mb-8 flex flex-col items-center">
           {/* Top Icon */}
@@ -26,10 +26,10 @@ export default function AuthLayout({ children, title, subtitle }: AuthLayoutProp
             <Image src="/logo.png" alt="dbcolorsNG Logo" width={96} height={96} />
           </div>
 
-          <h1 className="text-2xl font-bold text-black mb-2 tracking-tight">
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-50 mb-2 tracking-tight">
             {title}
           </h1>
-          <p className="text-neutral-500 text-sm leading-relaxed px-6 max-w-xs mx-auto">
+          <p className="text-neutral-500 dark:text-neutral-400 text-sm leading-relaxed px-6 max-w-xs mx-auto">
             {subtitle}
           </p>
         </header>
