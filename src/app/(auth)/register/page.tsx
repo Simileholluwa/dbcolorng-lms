@@ -55,7 +55,7 @@ export default function RegisterPage() {
               className={errors.firstName ? "border-red-500" : ""}
             />
             {errors.firstName && (
-              <p className="text-[11px] text-red-500 font-medium ml-4">{errors.firstName.message}</p>
+              <p className="text-[11px] text-red-500 font-medium ml-4 text-left">{errors.firstName.message}</p>
             )}
           </div>
           <div className="space-y-1">
@@ -66,7 +66,7 @@ export default function RegisterPage() {
               className={errors.lastName ? "border-red-500" : ""}
             />
             {errors.lastName && (
-              <p className="text-[11px] text-red-500 font-medium ml-4">{errors.lastName.message}</p>
+              <p className="text-[11px] text-red-500 font-medium ml-4 text-left">{errors.lastName.message}</p>
             )}
           </div>
         </div>
@@ -80,7 +80,7 @@ export default function RegisterPage() {
             className={errors.email ? "border-red-500" : ""}
           />
           {errors.email && (
-            <p className="text-[11px] text-red-500 font-medium ml-4">{errors.email.message}</p>
+            <p className="text-[11px] text-red-500 font-medium ml-4 text-left">{errors.email.message}</p>
           )}
         </div>
 
@@ -106,7 +106,7 @@ export default function RegisterPage() {
             }
           />
           {errors.password && (
-            <p className="text-[11px] text-red-500 font-medium ml-4">{errors.password.message}</p>
+            <p className="text-[11px] text-red-500 font-medium ml-4 text-left">{errors.password.message}</p>
           )}
         </div>
 

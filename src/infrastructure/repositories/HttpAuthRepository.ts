@@ -11,21 +11,28 @@ export class HttpAuthRepository implements AuthRepository {
     return response.data;
   }
 
-  async register(email: string, password: string, displayName: string): Promise<AuthResponse> {
+  async register(email: string, password: string, displayName: string, redirectUrl?: string): Promise<AuthResponse> {
     const response = await apiClient.post<AuthResponse>("/auth/register", {
       email,
       password,
       display_name: displayName,
+      redirect_url: redirectUrl,
     });
     return response.data;
   }
 
-  async forgotPassword(email: string): Promise<void> {
-    await apiClient.post("/auth/password-reset", { email });
+  async forgotPassword(email: string, redirectUrl?: string): Promise<void> {
+    await apiClient.post("/auth/password-reset", {
+      email,
+      redirect_url: redirectUrl,
+    });
   }
 
-  async requestEmailVerification(email: string): Promise<void> {
-    await apiClient.post("/auth/verify-email-request", { email });
+  async requestEmailVerification(email: string, redirectUrl?: string): Promise<void> {
+    await apiClient.post("/auth/verify-email-request", {
+      email,
+      redirect_url: redirectUrl,
+    });
   }
 
   async getCurrentUser(): Promise<User | null> {

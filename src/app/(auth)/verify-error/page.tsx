@@ -13,11 +13,14 @@ function VerifyErrorContent() {
   const searchParams = useSearchParams();
   const detail = searchParams.get("detail") || "The verification link is invalid or has expired.";
   const { resendVerification, isResending } = useAuth();
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
 
   const handleResend = () => {
     if (user?.email) {
-      resendVerification(user.email);
+      const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || (typeof window !== "undefined" ? window.location.origin : "http://localhost:3000");
+      const redirectUrl = `${frontendUrl}/verify-success`;
+
+      resendVerification({ email: user.email, redirectUrl });
     }
   };
 
@@ -41,6 +44,7 @@ function VerifyErrorContent() {
         <div className="text-center pt-2">
           <Link
             href="/login"
+            onClick={() => logout()}
             className="inline-flex items-center text-sm text-neutral-500 hover:text-black dark:hover:text-white transition-colors font-semibold gap-2"
           >
             <ArrowLeft className="w-4 h-4" />

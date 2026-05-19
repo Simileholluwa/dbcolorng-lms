@@ -16,9 +16,9 @@ export default function AuthLayout({ children, title, subtitle }: AuthLayoutProp
       <motion.div
         layout
         transition={{ ease: "easeOut", duration: 0.3 }}
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="relative z-10 w-full max-w-[440px] bg-white dark:bg-neutral-950 rounded-2xl shadow-sm shadow-black/5 dark:shadow-black/20 border border-neutral-100 dark:border-neutral-800 p-8 md:p-10 text-center transition-all duration-300"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="relative z-10 w-full max-w-[440px] text-center transition-all duration-300"
       >
         <header className="mb-8 flex flex-col items-center">
           {/* Top Icon */}

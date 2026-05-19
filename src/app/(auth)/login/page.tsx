@@ -49,7 +49,7 @@ export default function LoginPage() {
             className={errors.email ? "border-red-500" : ""}
           />
           {errors.email && (
-            <p className="text-[11px] text-red-500 font-medium ml-4">{errors.email.message}</p>
+            <p className="text-[11px] text-red-500 font-medium ml-4 text-left">{errors.email.message}</p>
           )}
         </div>
 
@@ -77,7 +77,7 @@ export default function LoginPage() {
             />
           </div>
           {errors.password && (
-            <p className="text-[11px] text-red-500 font-medium ml-4">{errors.password.message}</p>
+            <p className="text-[11px] text-red-500 font-medium ml-4 text-left">{errors.password.message}</p>
           )}
         </div>
 

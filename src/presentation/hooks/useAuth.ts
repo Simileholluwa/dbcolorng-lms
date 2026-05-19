@@ -18,19 +18,25 @@ export const useAuth = () => {
     mutationFn: ({ email, password }: any) => loginUseCase.execute(email, password),
     onSuccess: (data) => {
       setAuth(data.user, data.access_token, data.refresh_token);
-      
+
+      const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+      const redirectUrl = searchParams?.get("redirect_url") || "/dashboard";
+
       if (!data.user.email_verified) {
         toast.info("Email verification required", {
           description: "Please verify your email to access your dashboard.",
         });
-        router.push("/verify-email-sent");
+        const verifyRedirect = redirectUrl !== "/dashboard"
+          ? `/verify-email-sent?redirect_url=${encodeURIComponent(redirectUrl)}`
+          : "/verify-email-sent";
+        router.push(verifyRedirect);
         return;
       }
 
       toast.success("Welcome back!", {
         description: `Logged in as ${data.user.display_name}`,
       });
-      router.push("/dashboard");
+      router.push(redirectUrl);
     },
     onError: (error: any) => {
       toast.error("Login failed", {
@@ -40,13 +46,22 @@ export const useAuth = () => {
   });
 
   const registerMutation = useMutation({
-    mutationFn: ({ email, password, displayName }: any) => registerUseCase.execute(email, password, displayName),
+    mutationFn: ({ email, password, displayName }: any) => {
+      const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || (typeof window !== "undefined" ? window.location.origin : "http://localhost:3000");
+      const redirectUrl = `${frontendUrl}/verify-success`;
+      return registerUseCase.execute(email, password, displayName, redirectUrl);
+    },
     onSuccess: (data) => {
       setAuth(data.user, data.access_token);
       toast.success("Account created!", {
         description: "Please check your email to verify your account.",
       });
-      router.push("/verify-email-sent");
+      const searchParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+      const redirectUrl = searchParams?.get("redirect_url");
+      const verifyRedirect = redirectUrl
+        ? `/verify-email-sent?redirect_url=${encodeURIComponent(redirectUrl)}`
+        : "/verify-email-sent";
+      router.push(verifyRedirect);
     },
     onError: (error: any) => {
       toast.error("Registration failed", {
@@ -56,7 +71,8 @@ export const useAuth = () => {
   });
 
   const resendVerificationMutation = useMutation({
-    mutationFn: (email: string) => authRepository.requestEmailVerification(email),
+    mutationFn: ({ email, redirectUrl }: { email: string; redirectUrl?: string }) =>
+      authRepository.requestEmailVerification(email, redirectUrl),
     onSuccess: () => {
       toast.success("Verification email sent!", {
         description: "Please check your inbox.",
@@ -69,6 +85,21 @@ export const useAuth = () => {
     },
   });
 
+  const forgotPasswordMutation = useMutation({
+    mutationFn: ({ email, redirectUrl }: { email: string; redirectUrl?: string }) =>
+      authRepository.forgotPassword(email, redirectUrl),
+    onSuccess: () => {
+      toast.success("Reset email sent!", {
+        description: "Please check your inbox for a password reset link.",
+      });
+    },
+    onError: (error: any) => {
+      toast.error("Request failed", {
+        description: error.response?.data?.detail || "Something went wrong",
+      });
+    },
+  });
+
   return {
     login: loginMutation.mutate,
     isLoggingIn: loginMutation.isPending,
@@ -76,6 +107,8 @@ export const useAuth = () => {
     isRegistering: registerMutation.isPending,
     resendVerification: resendVerificationMutation.mutate,
     isResending: resendVerificationMutation.isPending,
+    forgotPassword: forgotPasswordMutation.mutate,
+    isSendingForgotPassword: forgotPasswordMutation.isPending,
     logout,
   };
 };
