@@ -141,16 +141,23 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           {mounted && (
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full border border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-400 dark:text-neutral-300 transition-all cursor-pointer"
+              className="p-2 rounded-full border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-400 dark:text-neutral-300 transition-all cursor-pointer"
             >
-              {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-4 h-4 text-amber-400" />}
+              {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5 text-amber-400" />}
             </button>
           )}
 
           <button
-            className="p-2 rounded-full border border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-400 dark:text-neutral-300 transition-all cursor-pointer"
+            className="p-2 rounded-full border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-400 dark:text-neutral-300 transition-all cursor-pointer"
           >
             <Bell className="w-5 h-5" />
+          </button>
+
+          <button
+            onClick={logout}
+            className="p-2 rounded-full border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-red-500 transition-all cursor-pointer"
+          >
+            <LogOut className="w-5 h-5" />
           </button>
 
           <div className="w-9 h-9 rounded-full overflow-hidden border border-black/10 dark:border-white/10">

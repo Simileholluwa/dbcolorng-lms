@@ -17,7 +17,7 @@ export const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: ({ email, password }: any) => loginUseCase.execute(email, password),
     onSuccess: (data) => {
-      setAuth(data.user, data.access_token);
+      setAuth(data.user, data.access_token, data.refresh_token);
       
       if (!data.user.email_verified) {
         toast.info("Email verification required", {

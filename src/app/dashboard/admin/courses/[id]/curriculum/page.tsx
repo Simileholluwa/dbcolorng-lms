@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useState, useEffect } from "react";
+import React, { use, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -17,12 +17,14 @@ import {
   ChevronDown,
   Loader2,
   FolderOpen,
-  Edit3
+  Edit3,
+  X
 } from "lucide-react";
 import { useAdmin } from "@/presentation/hooks/useAdmin";
 import DashboardLayout from "@/presentation/components/DashboardLayout";
 import { Module } from "@/domain/entities/Module";
 import { Lesson } from "@/domain/entities/Lesson";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface CurriculumPageProps {
   params: Promise<{ id: string }>;
@@ -69,6 +71,38 @@ export default function CurriculumPage({ params }: CurriculumPageProps) {
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
   // Selected active item state in the editor pane
   const [editorMode, setEditorMode] = useState<EditorMode>({ type: "idle" });
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 1023px)");
+    setIsMobile(media.matches);
+    const listener = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    media.addEventListener("change", listener);
+    return () => media.removeEventListener("change", listener);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile && editorMode.type !== "idle") {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobile, editorMode]);
+
+  const hasInitializedAccordion = useRef(false);
+
+  // Keep the first accordion open by default when modules are loaded
+  useEffect(() => {
+    if (modules.length > 0 && !hasInitializedAccordion.current) {
+      const sorted = [...modules].sort((a, b) => a.order - b.order);
+      setExpandedModules({ [sorted[0].id]: true });
+      hasInitializedAccordion.current = true;
+    }
+  }, [modules]);
 
   // Track lessons by module ID using a local state map
   const [lessonsMap, setLessonsMap] = useState<Record<string, Lesson[]>>({});
@@ -201,6 +235,250 @@ export default function CurriculumPage({ params }: CurriculumPageProps) {
     }
   };
 
+  const renderFormContent = () => {
+    return (
+      <>
+        {/* Form: Create or Edit Module */}
+        {(editorMode.type === "create-module" || editorMode.type === "edit-module") && (
+          <form onSubmit={handleSaveModule} className="space-y-4 flex-1 flex flex-col">
+            {!isMobile && (
+              <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-4">
+                <h3 className="font-extrabold text-neutral-800 dark:text-neutral-100 text-md">
+                  {editorMode.type === "create-module" ? "Create Course Module" : "Edit Module Settings"}
+                </h3>
+                {editorMode.type === "edit-module" && (
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteModule(editorMode.module.id)}
+                    disabled={isDeletingModule}
+                    className="p-2.5 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/30 text-red-600 rounded-lg transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center border border-red-200/20"
+                    title="Delete Module"
+                  >
+                    {isDeletingModule ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-4 h-4" />
+                    )}
+                  </button>
+                )}
+              </div>
+            )}
+
+            <div className="space-y-4 pt-2 flex-1">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Title */}
+                <div className="md:col-span-2 space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Module Title</label>
+                  <input
+                    type="text"
+                    required
+                    value={moduleTitle}
+                    onChange={(e) => setModuleTitle(e.target.value)}
+                    placeholder="e.g. Overview of Fundamentals"
+                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-white/5 focus:border-neutral-400 focus:bg-white dark:focus:bg-black rounded-lg focus:outline-none text-sm font-medium transition-all dark:text-white"
+                  />
+                </div>
+
+                {/* Order & Custom Ordering */}
+                <div className="md:col-span-1 space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Display Order</label>
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    value={moduleOrder}
+                    onChange={(e) => setModuleOrder(Number(e.target.value))}
+                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-white/5 focus:border-neutral-400 focus:bg-white dark:focus:bg-black rounded-lg focus:outline-none text-sm font-medium transition-all dark:text-white"
+                  />
+                  <p className="text-[10px] text-neutral-400 dark:text-neutral-500 -mt-2">Controls the sequence order in which this module is displayed to learners.</p>
+
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Overview Summary</label>
+                <textarea
+                  rows={4}
+                  value={moduleDescription}
+                  onChange={(e) => setModuleDescription(e.target.value)}
+                  placeholder="Brief summary of what this module covers..."
+                  className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-white/5 focus:border-neutral-400 focus:bg-white dark:focus:bg-black rounded-lg focus:outline-none text-sm font-medium transition-all resize-none dark:text-white"
+                />
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setEditorMode({ type: "idle" })}
+                className="px-4 py-3 bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-lg text-sm font-bold hover:text-black dark:hover:text-white transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isCreatingModule || isUpdatingModule}
+                className="flex items-center gap-2 px-5 py-3 bg-black dark:bg-white text-white dark:text-black font-extrabold rounded-lg text-sm disabled:bg-opacity-50 transition-all cursor-pointer"
+              >
+                {(isCreatingModule || isUpdatingModule) ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Save className="w-3.5 h-3.5" />
+                )}
+                <span>Save Module Settings</span>
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Form: Create or Edit Lesson */}
+        {(editorMode.type === "create-lesson" || editorMode.type === "edit-lesson") && (
+          <form onSubmit={handleSaveLesson} className="flex-1 flex flex-col">
+            {!isMobile && (
+              <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-4">
+                <h3 className="font-extrabold text-neutral-800 dark:text-neutral-100 text-md">
+                  {editorMode.type === "create-lesson" ? "Add Lesson Resource" : "Edit Lesson Settings"}
+                </h3>
+                {editorMode.type === "edit-lesson" && (
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteLesson(editorMode.lesson.id, editorMode.moduleId)}
+                    disabled={isDeletingLesson}
+                    className="p-2.5 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/30 text-red-600 rounded-lg transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center border border-red-200/20"
+                    title="Delete Lesson"
+                  >
+                    {isDeletingLesson ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-4 h-4" />
+                    )}
+                  </button>
+                )}
+              </div>
+            )}
+
+            <div className="space-y-4 pt-2 md:pt-4 flex-1 overflow-y-auto max-h-[500px] scrollbar-hide">
+              {/* Title */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Lesson Title</label>
+                <input
+                  type="text"
+                  required
+                  value={lessonTitle}
+                  onChange={(e) => setLessonTitle(e.target.value)}
+                  placeholder="e.g. Introduction to Variables"
+                  className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-white/5 focus:border-neutral-400 focus:bg-white dark:focus:bg-black rounded-lg focus:outline-none text-sm font-medium transition-all dark:text-white"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 pb-2">
+                {/* Order */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Display Order</label>
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    value={lessonOrder}
+                    onChange={(e) => setLessonOrder(Number(e.target.value))}
+                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-white/5 focus:border-neutral-400 focus:bg-white dark:focus:bg-black rounded-lg focus:outline-none text-sm font-medium transition-all dark:text-white"
+                  />
+                </div>
+
+                {/* Duration */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Estimated Duration (Mins)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    value={lessonDurationMinutes}
+                    onChange={(e) => setLessonDurationMinutes(Number(e.target.value))}
+                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-white/5 focus:border-neutral-400 focus:bg-white dark:focus:bg-black rounded-lg focus:outline-none text-sm font-medium transition-all dark:text-white"
+                  />
+                </div>
+              </div>
+
+              {/* Resources section */}
+              <div className="bg-neutral-50 dark:bg-neutral-900 rounded-lg p-4 border border-neutral-200/60 dark:border-white/5 space-y-4">
+                <span className="text-[10px] font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest block border-b border-neutral-200/60 dark:border-white/5 pb-2">
+                  Resource Delivery Options
+                </span>
+
+                {/* Video URL */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-neutral-600 dark:text-neutral-300 flex items-center gap-1.5">
+                    <PlayCircle className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500" />
+                    <span>Video Handout URL (Optional)</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={lessonVideoUrl}
+                    onChange={(e) => setLessonVideoUrl(e.target.value)}
+                    placeholder="e.g. https://youtube.com/embed/..."
+                    className="w-full px-3.5 py-2.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/5 focus:outline-none focus:border-neutral-400 text-xs font-medium dark:text-white"
+                  />
+                </div>
+
+                {/* PDF URL */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-neutral-600 dark:text-neutral-300 flex items-center gap-1.5">
+                    <FileText className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500" />
+                    <span>PDF Reading Attachment (Optional)</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={lessonPdfUrl}
+                    onChange={(e) => setLessonPdfUrl(e.target.value)}
+                    placeholder="e.g. https://example.com/handouts/l1.pdf"
+                    className="w-full px-3.5 py-2.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/5 focus:outline-none focus:border-neutral-400 text-xs font-medium dark:text-white"
+                  />
+                </div>
+              </div>
+
+              {/* Body Text */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Lesson Body & Notes Content</label>
+                <textarea
+                  rows={6}
+                  value={lessonBodyText}
+                  onChange={(e) => setLessonBodyText(e.target.value)}
+                  placeholder="Write dynamic reading notes, code snippets, or additional text instructions here..."
+                  className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-white/5 focus:border-neutral-400 focus:bg-white dark:focus:bg-black rounded-lg focus:outline-none text-xs font-mono transition-all resize-none dark:text-white"
+                />
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-end gap-3 pt-4">
+              <button
+                type="button"
+                onClick={() => setEditorMode({ type: "idle" })}
+                className="px-4 py-3 bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-lg text-sm font-bold hover:text-black dark:hover:text-white transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isCreatingLesson || isUpdatingLesson}
+                className="flex items-center gap-2 px-5 py-3 bg-black dark:bg-white text-white dark:text-black font-extrabold rounded-lg text-sm disabled:bg-opacity-50 transition-all cursor-pointer"
+              >
+                {(isCreatingLesson || isUpdatingLesson) ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Save className="w-3.5 h-3.5" />
+                )}
+                <span>Save Lesson Settings</span>
+              </button>
+            </div>
+          </form>
+        )}
+      </>
+    );
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -277,7 +555,7 @@ export default function CurriculumPage({ params }: CurriculumPageProps) {
           </div>
 
           {/* RIGHT COLUMN: Dynamic Workspace Context Form */}
-          <div className="lg:col-span-3">
+          <div className="hidden lg:block lg:col-span-3">
             <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-lg p-4 shadow-xs min-h-[400px] flex flex-col">
 
               {editorMode.type === "idle" && (
@@ -290,244 +568,90 @@ export default function CurriculumPage({ params }: CurriculumPageProps) {
                 </div>
               )}
 
-              {/* Form: Create or Edit Module */}
-              {(editorMode.type === "create-module" || editorMode.type === "edit-module") && (
-                <form onSubmit={handleSaveModule} className="space-y-4 flex-1 flex flex-col">
-                  <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-4">
-                    <h3 className="font-extrabold text-neutral-800 dark:text-neutral-100 text-md">
-                      {editorMode.type === "create-module" ? "Create Course Module" : "Edit Module Settings"}
-                    </h3>
-                    {editorMode.type === "edit-module" && (
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteModule(editorMode.module.id)}
-                        disabled={isDeletingModule}
-                        className="p-2.5 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/30 text-red-600 rounded-lg transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center border border-red-200/20"
-                        title="Delete Module"
-                      >
-                        {isDeletingModule ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="w-4 h-4" />
-                        )}
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="space-y-4 flex-1">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {/* Title */}
-                      <div className="md:col-span-2 space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Module Title</label>
-                        <input
-                          type="text"
-                          required
-                          value={moduleTitle}
-                          onChange={(e) => setModuleTitle(e.target.value)}
-                          placeholder="e.g. Overview of Fundamentals"
-                          className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-white/5 focus:border-neutral-400 focus:bg-white dark:focus:bg-black rounded-lg focus:outline-none text-sm font-medium transition-all dark:text-white"
-                        />
-                      </div>
-
-                      {/* Order & Custom Ordering */}
-                      <div className="md:col-span-1 space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Display Order</label>
-                        <input
-                          type="number"
-                          min="1"
-                          required
-                          value={moduleOrder}
-                          onChange={(e) => setModuleOrder(Number(e.target.value))}
-                          className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-white/5 focus:border-neutral-400 focus:bg-white dark:focus:bg-black rounded-lg focus:outline-none text-sm font-medium transition-all dark:text-white"
-                        />
-                        <p className="text-[10px] text-neutral-400 dark:text-neutral-500 -mt-2">Controls the sequence order in which this module is displayed to learners.</p>
-
-                      </div>
-                    </div>
-
-                    {/* Description */}
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Overview Summary</label>
-                      <textarea
-                        rows={4}
-                        value={moduleDescription}
-                        onChange={(e) => setModuleDescription(e.target.value)}
-                        placeholder="Brief summary of what this module covers..."
-                        className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-white/5 focus:border-neutral-400 focus:bg-white dark:focus:bg-black rounded-lg focus:outline-none text-sm font-medium transition-all resize-none dark:text-white"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex items-center justify-end gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setEditorMode({ type: "idle" })}
-                      className="px-4 py-4 bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-lg text-sm font-bold hover:text-black dark:hover:text-white transition-all cursor-pointer"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={isCreatingModule || isUpdatingModule}
-                      className="flex items-center gap-2 px-5 py-4 bg-black dark:bg-white text-white dark:text-black font-extrabold rounded-lg text-sm disabled:bg-opacity-50 transition-all cursor-pointer"
-                    >
-                      {(isCreatingModule || isUpdatingModule) ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : (
-                        <Save className="w-3.5 h-3.5" />
-                      )}
-                      <span>Save Module Settings</span>
-                    </button>
-                  </div>
-                </form>
-              )}
-
-              {/* Form: Create or Edit Lesson */}
-              {(editorMode.type === "create-lesson" || editorMode.type === "edit-lesson") && (
-                <form onSubmit={handleSaveLesson} className="flex-1 flex flex-col">
-                  <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-4">
-                    <h3 className="font-extrabold text-neutral-800 dark:text-neutral-100 text-md">
-                      {editorMode.type === "create-lesson" ? "Add Lesson Resource" : "Edit Lesson Settings"}
-                    </h3>
-                    {editorMode.type === "edit-lesson" && (
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteLesson(editorMode.lesson.id, editorMode.moduleId)}
-                        disabled={isDeletingLesson}
-                        className="p-2.5 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/30 text-red-600 rounded-lg transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center border border-red-200/20"
-                        title="Delete Lesson"
-                      >
-                        {isDeletingLesson ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="w-4 h-4" />
-                        )}
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="space-y-4 pt-4 flex-1 overflow-y-auto max-h-[500px] scrollbar-hide pr-2">
-                    {/* Title */}
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Lesson Title</label>
-                      <input
-                        type="text"
-                        required
-                        value={lessonTitle}
-                        onChange={(e) => setLessonTitle(e.target.value)}
-                        placeholder="e.g. Introduction to Variables"
-                        className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-white/5 focus:border-neutral-400 focus:bg-white dark:focus:bg-black rounded-lg focus:outline-none text-sm font-medium transition-all dark:text-white"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 pb-2">
-                      {/* Order */}
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Display Order</label>
-                        <input
-                          type="number"
-                          min="1"
-                          required
-                          value={lessonOrder}
-                          onChange={(e) => setLessonOrder(Number(e.target.value))}
-                          className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-white/5 focus:border-neutral-400 focus:bg-white dark:focus:bg-black rounded-lg focus:outline-none text-sm font-medium transition-all dark:text-white"
-                        />
-                      </div>
-
-                      {/* Duration */}
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Estimated Duration (Mins)</label>
-                        <input
-                          type="number"
-                          min="1"
-                          required
-                          value={lessonDurationMinutes}
-                          onChange={(e) => setLessonDurationMinutes(Number(e.target.value))}
-                          className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-white/5 focus:border-neutral-400 focus:bg-white dark:focus:bg-black rounded-lg focus:outline-none text-sm font-medium transition-all dark:text-white"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Resources section */}
-                    <div className="bg-neutral-50 dark:bg-neutral-900 rounded-lg p-4 border border-neutral-200/60 dark:border-white/5 space-y-4">
-                      <span className="text-[10px] font-black text-neutral-500 dark:text-neutral-400 uppercase tracking-widest block border-b border-neutral-200/60 dark:border-white/5 pb-2">
-                        Resource Delivery Options
-                      </span>
-
-                      {/* Video URL */}
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-neutral-600 dark:text-neutral-300 flex items-center gap-1.5">
-                          <PlayCircle className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500" />
-                          <span>Video Handout URL (Optional)</span>
-                        </label>
-                        <input
-                          type="url"
-                          value={lessonVideoUrl}
-                          onChange={(e) => setLessonVideoUrl(e.target.value)}
-                          placeholder="e.g. https://youtube.com/embed/..."
-                          className="w-full px-3.5 py-2.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/5 focus:outline-none focus:border-neutral-400 text-xs font-medium dark:text-white"
-                        />
-                      </div>
-
-                      {/* PDF URL */}
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-neutral-600 dark:text-neutral-300 flex items-center gap-1.5">
-                          <FileText className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500" />
-                          <span>PDF Reading Attachment (Optional)</span>
-                        </label>
-                        <input
-                          type="url"
-                          value={lessonPdfUrl}
-                          onChange={(e) => setLessonPdfUrl(e.target.value)}
-                          placeholder="e.g. https://example.com/handouts/l1.pdf"
-                          className="w-full px-3.5 py-2.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-white/5 focus:outline-none focus:border-neutral-400 text-xs font-medium dark:text-white"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Body Text */}
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Lesson Body & Notes Content</label>
-                      <textarea
-                        rows={6}
-                        value={lessonBodyText}
-                        onChange={(e) => setLessonBodyText(e.target.value)}
-                        placeholder="Write dynamic reading notes, code snippets, or additional text instructions here..."
-                        className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-white/5 focus:border-neutral-400 focus:bg-white dark:focus:bg-black rounded-lg focus:outline-none text-xs font-mono transition-all resize-none dark:text-white"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex items-center justify-end gap-3 pt-4">
-                    <button
-                      type="button"
-                      onClick={() => setEditorMode({ type: "idle" })}
-                      className="px-4 py-4 bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-lg text-sm font-bold hover:text-black dark:hover:text-white transition-all cursor-pointer"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={isCreatingLesson || isUpdatingLesson}
-                      className="flex items-center gap-2 px-5 py-4 bg-black dark:bg-white text-white dark:text-black font-extrabold rounded-lg text-sm disabled:bg-opacity-50 transition-all cursor-pointer"
-                    >
-                      {(isCreatingLesson || isUpdatingLesson) ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : (
-                        <Save className="w-3.5 h-3.5" />
-                      )}
-                      <span>Save Lesson Settings</span>
-                    </button>
-                  </div>
-                </form>
-              )}
+              {editorMode.type !== "idle" && renderFormContent()}
 
             </div>
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {isMobile && editorMode.type !== "idle" && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setEditorMode({ type: "idle" })}
+              className="fixed inset-0 bg-black z-200 lg:hidden"
+            />
+            {/* Bottom Sheet */}
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 250 }}
+              className="fixed inset-x-0 bottom-0 max-h-[90vh] bg-white dark:bg-neutral-950 rounded-t-3xl border-t border-black/10 dark:border-white/10 shadow-2xl z-200 flex flex-col lg:hidden"
+            >
+              {/* Header Handle */}
+              <div className="relative flex items-center justify-between pr-2 pl-4 pt-5 pb-3 border-b border-black/5 dark:border-white/5 shrink-0">
+                <div className="w-12 h-1.5 bg-neutral-300 dark:bg-neutral-800 rounded-full mx-auto absolute left-1/2 -translate-x-1/2 top-2.5" />
+                <h3 className="font-extrabold text-neutral-800 dark:text-neutral-100 text-base mt-2">
+                  {editorMode.type === "create-module" && "Create Course Module"}
+                  {editorMode.type === "edit-module" && "Edit Module Settings"}
+                  {editorMode.type === "create-lesson" && "Add Lesson Resource"}
+                  {editorMode.type === "edit-lesson" && "Edit Lesson Settings"}
+                </h3>
+                <div className="flex items-center gap-2">
+                  {editorMode.type === "edit-module" && (
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteModule(editorMode.module.id)}
+                      disabled={isDeletingModule}
+                      className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center"
+                      title="Delete Module"
+                    >
+                      {isDeletingModule ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
+                    </button>
+                  )}
+                  {editorMode.type === "edit-lesson" && (
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteLesson(editorMode.lesson.id, editorMode.moduleId)}
+                      disabled={isDeletingLesson}
+                      className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center"
+                      title="Delete Lesson"
+                    >
+                      {isDeletingLesson ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setEditorMode({ type: "idle" })}
+                    className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-lg text-neutral-400 dark:text-neutral-500 hover:text-black dark:hover:text-white transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Scrollable Form Content */}
+              <div className="flex-1 overflow-y-auto px-4 pb-4 pb-5 scrollbar-hide">
+                {renderFormContent()}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </DashboardLayout>
   );
 }

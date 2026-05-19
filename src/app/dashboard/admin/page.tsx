@@ -27,6 +27,7 @@ import { useAdmin } from "@/presentation/hooks/useAdmin";
 import DashboardLayout from "@/presentation/components/DashboardLayout";
 import { Course } from "@/domain/entities/Course";
 import { Button } from "@/presentation/components/ui/Button";
+import { Dialog } from "@/presentation/components/ui/Dialog";
 
 // Form Validation Schema using Zod
 const courseSchema = z.object({
@@ -434,15 +435,15 @@ export default function AdminDashboardPage() {
                             )}
                           </div>
                           <div>
-                            <h4 className="font-extrabold text-neutral-800 dark:text-neutral-100 text-sm hover:text-black dark:hover:text-white transition-colors">
+                            <h4 className="font-extrabold text-neutral-800 dark:text-neutral-100 text-base hover:text-black dark:hover:text-white transition-colors">
                               <Link href={`/dashboard/admin/courses/${course.id}`}>{course.title}</Link>
                             </h4>
-                            <p className="text-neutral-400 dark:text-neutral-550 text-xs mt-1 line-clamp-2 max-w-md">{course.description}</p>
+                            <p className="text-neutral-400 dark:text-neutral-550 text-sm mt-1 line-clamp-2 max-w-md">{course.description}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-5">
-                        <span className="px-3.5 py-1 bg-neutral-200 dark:bg-neutral-900 rounded-sm text-xs font-bold text-neutral-600 dark:text-neutral-300">
+                        <span className="px-3.5 py-1 bg-neutral-200 dark:bg-neutral-900 rounded-full text-xs font-bold text-neutral-600 dark:text-neutral-300">
                           {course.category}
                         </span>
                       </td>
@@ -526,50 +527,41 @@ export default function AdminDashboardPage() {
                     <h4 className="font-extrabold text-neutral-800 dark:text-neutral-100 text-base line-clamp-1">
                       <Link href={`/dashboard/admin/courses/${course.id}`}>{course.title}</Link>
                     </h4>
-                    <p className="text-neutral-400 dark:text-neutral-500 text-sm mt-1 line-clamp-2">{course.description}</p>
+                    <p className="text-neutral-400 dark:text-neutral-500 text-sm mt-1 line-clamp-3">{course.description}</p>
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-black/5 dark:border-white/5 pt-4">
-                    {/* Left: Modules & Lessons Count */}
-                    <div className="flex items-center gap-2.5 text-neutral-500 dark:text-neutral-400 text-xs font-bold">
-                      <span className="flex items-center justify-center gap-1">
-                        <Layers className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-550" />
-                        <span>{course.modules?.length || 0} {course.modules?.length === 1 ? "module" : "modules"}</span>
-                      </span>
-                      <span className="text-neutral-350 dark:text-neutral-800">•</span>
-                      <span className="flex items-center justify-center gap-1">
-                        <BookOpen className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-550" />
-                        <span>
-                          {course.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || 0} {course.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) === 1 ? "lesson" : "lessons"}
-                        </span>
-                      </span>
-                    </div>
-
-                    {/* Right: Actions */}
-                    <div className="flex items-center gap-2">
+                  <div className="border-t border-black/5 dark:border-white/5 pt-3 w-full">
+                    <div className="grid grid-cols-3 gap-2 w-full">
                       <button
                         onClick={() => router.push(`/dashboard/admin/courses/${course.id}`)}
-                        className="p-2 text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-xl transition-all cursor-pointer"
+                        className="flex items-center justify-center gap-1.5 py-2 text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white bg-neutral-100/70 dark:bg-neutral-900/60 hover:bg-neutral-200/80 dark:hover:bg-neutral-900 rounded-full text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer w-full"
                         title="Edit Syllabus & Content"
                       >
-                        <SlidersHorizontal className="w-4.5 h-4.5" />
+                        <SlidersHorizontal className="w-3.5 h-3.5 shrink-0" />
+                        <span>Edit</span>
                       </button>
                       <button
                         onClick={() => requestTogglePublish(course)}
-                        className={`p-2 rounded-xl transition-all cursor-pointer ${course.status === "published"
-                          ? "text-yellow-500 hover:text-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-950/20"
-                          : "text-[#A3D14B] hover:bg-[#A3D14B]/10"
+                        className={`flex items-center justify-center gap-1.5 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer w-full ${course.status === "published"
+                          ? "text-yellow-600 dark:text-yellow-500 bg-yellow-50 dark:bg-yellow-950/20 hover:bg-yellow-100/70 dark:hover:bg-yellow-950/40"
+                          : "text-[#A3D14B] bg-[#A3D14B]/15 hover:bg-[#A3D14B]/25"
                           }`}
                         title={course.status === "published" ? "Unpublish Course" : "Publish Course"}
                       >
-                        {course.status === "published" ? <XCircle className="w-4.5 h-4.5" /> : <CheckCircle2 className="w-4.5 h-4.5" />}
+                        {course.status === "published" ? (
+                          <XCircle className="w-3.5 h-3.5 shrink-0" />
+                        ) : (
+                          <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                        )}
+                        <span>{course.status === "published" ? "Unpublish" : "Publish"}</span>
                       </button>
                       <button
                         onClick={() => requestDeleteCourse(course)}
-                        className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-all cursor-pointer"
+                        className="flex items-center justify-center gap-1.5 py-2 text-red-500 hover:text-red-600 bg-red-50 dark:bg-red-950/20 hover:bg-red-100/70 dark:hover:bg-red-950/40 rounded-full text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer w-full"
                         title="Delete Course"
                       >
-                        <Trash2 className="w-4.5 h-4.5" />
+                        <Trash2 className="w-3.5 h-3.5 shrink-0" />
+                        <span>Delete</span>
                       </button>
                     </div>
                   </div>
@@ -734,100 +726,85 @@ export default function AdminDashboardPage() {
         </AnimatePresence>
 
         {/* Confirm Action Dialog Modal */}
-        <AnimatePresence>
-          {confirmModal.isOpen && confirmModal.course && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-              {/* Backdrop */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
-                className="absolute inset-0 bg-black/60 backdrop-blur-xs"
-              />
+        <Dialog
+          isOpen={confirmModal.isOpen && !!confirmModal.course}
+          onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+        >
+          {confirmModal.course && (
+            <div className="space-y-6">
+              {/* Header Indicator */}
+              <div className="flex items-start gap-4">
+                <div className={`p-3 rounded-full flex-shrink-0 flex items-center justify-center ${confirmModal.type === "delete"
+                  ? "bg-red-500/10 text-red-500"
+                  : confirmModal.type === "publish"
+                    ? "bg-[#A3D14B]/15 text-[#A3D14B]"
+                    : "bg-yellow-500/10 text-yellow-500"
+                  }`}>
+                  {confirmModal.type === "delete" ? (
+                    <Trash2 className="w-6 h-6" />
+                  ) : confirmModal.type === "publish" ? (
+                    <CheckCircle2 className="w-6 h-6" />
+                  ) : (
+                    <XCircle className="w-6 h-6" />
+                  )}
+                </div>
 
-              {/* Modal Body */}
-              <motion.div
-                initial={{ scale: 0.95, opacity: 0, y: 10 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.95, opacity: 0, y: 10 }}
-                transition={{ duration: 0.15 }}
-                className="relative w-full max-w-md overflow-hidden rounded-lg bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-white/5 p-6 shadow-xl space-y-6"
-              >
-                {/* Header Indicator */}
-                <div className="flex items-start gap-4">
-                  <div className={`p-3 rounded-full flex-shrink-0 flex items-center justify-center ${confirmModal.type === "delete"
-                    ? "bg-red-500/10 text-red-500"
-                    : confirmModal.type === "publish"
-                      ? "bg-[#A3D14B]/15 text-[#A3D14B]"
-                      : "bg-yellow-500/10 text-yellow-500"
-                    }`}>
-                    {confirmModal.type === "delete" ? (
-                      <Trash2 className="w-6 h-6" />
-                    ) : confirmModal.type === "publish" ? (
-                      <CheckCircle2 className="w-6 h-6" />
-                    ) : (
-                      <XCircle className="w-6 h-6" />
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg font-extrabold text-neutral-900 dark:text-white leading-6">
+                    {confirmModal.type === "delete"
+                      ? "Delete Course Permanently?"
+                      : confirmModal.type === "publish"
+                        ? "Publish This Course?"
+                        : "Unpublish This Course?"}
+                  </h3>
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2 font-medium">
+                    {confirmModal.type === "delete" && (
+                      <>
+                        You are about to permanently delete <span className="font-extrabold text-neutral-800 dark:text-neutral-200">{confirmModal.course.title}</span>. This will completely remove all nested curriculum modules, syllabus lessons, and quizzes. This action is destructive and cannot be undone.
+                      </>
                     )}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-extrabold text-neutral-900 dark:text-white leading-6">
-                      {confirmModal.type === "delete"
-                        ? "Delete Course Permanently?"
-                        : confirmModal.type === "publish"
-                          ? "Publish This Course?"
-                          : "Unpublish This Course?"}
-                    </h3>
-                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2 font-medium">
-                      {confirmModal.type === "delete" && (
-                        <>
-                          You are about to permanently delete <span className="font-extrabold text-neutral-800 dark:text-neutral-200">{confirmModal.course.title}</span>. This will completely remove all nested curriculum modules, syllabus lessons, and quizzes. This action is destructive and cannot be undone.
-                        </>
-                      )}
-                      {confirmModal.type === "publish" && (
-                        <>
-                          You are publishing <span className="font-extrabold text-neutral-800 dark:text-neutral-200">{confirmModal.course.title}</span>. Students will be able to enroll, view lessons, and take quizzes immediately.
-                        </>
-                      )}
-                      {confirmModal.type === "unpublish" && (
-                        <>
-                          You are unpublishing <span className="font-extrabold text-neutral-800 dark:text-neutral-200">{confirmModal.course.title}</span>. Active student enrollments will be preserved, but new students will not be able to find or enroll in this course.
-                        </>
-                      )}
-                    </p>
-                  </div>
+                    {confirmModal.type === "publish" && (
+                      <>
+                        You are publishing <span className="font-extrabold text-neutral-800 dark:text-neutral-200">{confirmModal.course.title}</span>. Students will be able to enroll, view lessons, and take quizzes immediately.
+                      </>
+                    )}
+                    {confirmModal.type === "unpublish" && (
+                      <>
+                        You are unpublishing <span className="font-extrabold text-neutral-800 dark:text-neutral-200">{confirmModal.course.title}</span>. Active student enrollments will be preserved, but new students will not be able to find or enroll in this course.
+                      </>
+                    )}
+                  </p>
                 </div>
+              </div>
 
-                {/* Action Buttons */}
-                <div className="flex items-center justify-end gap-3 pt-2">
-                  <button
-                    disabled={isActionPending}
-                    onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
-                    className="px-4 py-3 border border-neutral-200 dark:border-white/5 rounded-lg text-sm font-bold text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    disabled={isActionPending}
-                    onClick={executeConfirmAction}
-                    className={`px-4 py-3 rounded-lg text-sm font-bold text-white transition-all shadow-md shadow-black/5 hover:brightness-105 active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer ${confirmModal.type === "delete"
-                      ? "bg-red-500 hover:bg-red-600"
-                      : "bg-black text-white"
-                      }`}
-                  >
-                    {isActionPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                    <span>
-                      {isActionPending
-                        ? (confirmModal.type === "delete" ? "Deleting..." : confirmModal.type === "publish" ? "Publishing..." : "Unpublishing...")
-                        : (confirmModal.type === "delete" ? "Delete Course" : confirmModal.type === "publish" ? "Publish" : "Unpublish")}
-                    </span>
-                  </button>
-                </div>
-              </motion.div>
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  disabled={isActionPending}
+                  onClick={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                  className="px-4 py-3 border border-neutral-200 dark:border-white/5 rounded-lg text-sm font-bold text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  disabled={isActionPending}
+                  onClick={executeConfirmAction}
+                  className={`px-4 py-3 rounded-lg text-sm font-bold text-white transition-all shadow-md shadow-black/5 hover:brightness-105 active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer ${confirmModal.type === "delete"
+                    ? "bg-red-500 hover:bg-red-600"
+                    : "bg-black text-white"
+                    }`}
+                >
+                  {isActionPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                  <span>
+                    {isActionPending
+                      ? (confirmModal.type === "delete" ? "Deleting..." : confirmModal.type === "publish" ? "Publishing..." : "Unpublishing...")
+                      : (confirmModal.type === "delete" ? "Delete Course" : confirmModal.type === "publish" ? "Publish" : "Unpublish")}
+                  </span>
+                </button>
+              </div>
             </div>
           )}
-        </AnimatePresence>
+        </Dialog>
       </div>
     </DashboardLayout>
   );

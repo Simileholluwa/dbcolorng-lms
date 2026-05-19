@@ -15,7 +15,7 @@ export default function AuthLayout({ children, title, subtitle }: AuthLayoutProp
     <div className="min-h-screen flex items-start justify-start pt-20 lg:pt-0 lg:items-center md:justify-center p-4 relative overflow-hidden bg-white dark:bg-neutral-950">
       <motion.div
         layout
-        transition={{ type: "spring", stiffness: 150, damping: 25 }}
+        transition={{ ease: "easeOut", duration: 0.3 }}
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         className="relative z-10 w-full max-w-[440px] bg-white dark:bg-neutral-950 rounded-2xl shadow-sm shadow-black/5 dark:shadow-black/20 border border-neutral-100 dark:border-neutral-800 p-8 md:p-10 text-center transition-all duration-300"
