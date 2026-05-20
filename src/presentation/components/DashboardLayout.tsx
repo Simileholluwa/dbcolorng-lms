@@ -39,10 +39,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   }, [setTheme]);
 
   useEffect(() => {
-    if (mounted && !isAuthenticated) {
-      router.push("/login");
+    if (mounted) {
+      if (!isAuthenticated) {
+        router.push("/login");
+      } else if (user && !user.email_verified) {
+        router.push("/verify-email-sent");
+      }
     }
-  }, [mounted, isAuthenticated, router]);
+  }, [mounted, isAuthenticated, user, router]);
 
   if (!mounted || !user) return null;
 

@@ -43,4 +43,11 @@ export class HttpAuthRepository implements AuthRepository {
       return null;
     }
   }
+
+  async confirmPasswordReset(oobCode: string, newPassword: string): Promise<void> {
+    await apiClient.post("/auth/password-reset-confirm", {
+      oob_code: oobCode,
+      new_password: newPassword,
+    });
+  }
 }

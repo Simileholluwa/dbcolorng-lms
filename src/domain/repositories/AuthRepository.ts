@@ -6,4 +6,5 @@ export interface AuthRepository {
   forgotPassword(email: string, redirectUrl?: string): Promise<void>;
   requestEmailVerification(email: string, redirectUrl?: string): Promise<void>;
   getCurrentUser(): Promise<User | null>;
+  confirmPasswordReset(oobCode: string, newPassword: string): Promise<void>;
 }

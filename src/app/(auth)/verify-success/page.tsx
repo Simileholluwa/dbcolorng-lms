@@ -9,12 +9,20 @@ import { CheckCircle2, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { Suspense } from "react";
 
+import { useAuthStore } from "@/presentation/store/useAuthStore";
+import { useEffect } from "react";
+
 function VerifySuccessContent() {
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect_url") || "";
   const loginLink = redirectUrl 
     ? `/login?redirect_url=${encodeURIComponent(redirectUrl)}`
     : "/login";
+  const logout = useAuthStore((state) => state.logout);
+
+  useEffect(() => {
+    logout();
+  }, [logout]);
 
   return (
     <div className="space-y-8">

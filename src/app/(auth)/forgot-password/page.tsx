@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
 
   const onSubmit = (data: ForgotPasswordFormValues) => {
     const frontendUrl = process.env.NEXT_PUBLIC_FRONTEND_URL || (typeof window !== "undefined" ? window.location.origin : "http://localhost:3000");
-    const redirectUrl = `${frontendUrl}/login`;
+    const redirectUrl = `${frontendUrl}/reset-password`;
     forgotPassword({ email: data.email, redirectUrl });
   };
 

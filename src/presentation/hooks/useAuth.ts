@@ -100,6 +100,22 @@ export const useAuth = () => {
     },
   });
 
+  const confirmPasswordResetMutation = useMutation({
+    mutationFn: ({ oobCode, newPassword }: { oobCode: string; newPassword: string }) =>
+      authRepository.confirmPasswordReset(oobCode, newPassword),
+    onSuccess: () => {
+      toast.success("Password reset successful!", {
+        description: "You can now log in with your new password.",
+      });
+      router.push("/login");
+    },
+    onError: (error: any) => {
+      toast.error("Failed to reset password", {
+        description: error.response?.data?.detail || "Invalid or expired reset link",
+      });
+    },
+  });
+
   return {
     login: loginMutation.mutate,
     isLoggingIn: loginMutation.isPending,
@@ -109,6 +125,8 @@ export const useAuth = () => {
     isResending: resendVerificationMutation.isPending,
     forgotPassword: forgotPasswordMutation.mutate,
     isSendingForgotPassword: forgotPasswordMutation.isPending,
+    confirmPasswordReset: confirmPasswordResetMutation.mutate,
+    isConfirmingPasswordReset: confirmPasswordResetMutation.isPending,
     logout,
   };
 };
