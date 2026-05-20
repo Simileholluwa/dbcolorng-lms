@@ -22,7 +22,7 @@ const resetPasswordSchema = z.object({
 
 type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const searchParams = useSearchParams();
   const oobCode = searchParams.get("oobCode");
   const { confirmPasswordReset, isConfirmingPasswordReset, logout } = useAuth();
@@ -128,5 +128,17 @@ export default function ResetPasswordPage() {
         </div>
       </form>
     </AuthLayout>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-neutral-500 dark:text-neutral-400" />
+      </div>
+    }>
+      <ResetPasswordContent />
+    </React.Suspense>
   );
 }
