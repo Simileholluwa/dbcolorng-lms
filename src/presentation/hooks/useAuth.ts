@@ -65,7 +65,7 @@ export const useAuth = () => {
     },
     onError: (error: any) => {
       toast.error("Registration failed", {
-        description: error.response?.data?.message || "Something went wrong",
+        description: error.response?.data?.detail || error.response?.data?.message || "Something went wrong",
       });
     },
   });
@@ -80,7 +80,7 @@ export const useAuth = () => {
     },
     onError: (error: any) => {
       toast.error("Failed to resend email", {
-        description: error.response?.data?.message || "Something went wrong",
+        description: error.response?.data?.detail || error.response?.data?.message || "Something went wrong",
       });
     },
   });
