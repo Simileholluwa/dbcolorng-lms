@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
   ArrowLeft,
+  Eye,
   BookOpen,
   Layers,
   Trophy,
@@ -161,21 +162,33 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
         ) : (
           <div className="space-y-4">
             {/* Header info */}
-            <div className="pb-4">
-              <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
-                {course.title}
-              </h1>
-              <div className="flex flex-wrap items-center gap-2.5 mt-3">
-                <span className="px-3 py-1 bg-neutral-100 dark:bg-neutral-900 rounded-full text-xs font-black text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-white/5 uppercase tracking-wider">
-                  {course.category}
-                </span>
-                <span className={`px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ${course.status === "published"
-                  ? "bg-[#A3D14B]/15 text-[#A3D14B] border border-[#A3D14B]/20"
-                  : course.status === "draft" ? "bg-yellow-500/15 text-yellow-500 border border-yellow-500/20" :
-                    "bg-neutral-100 dark:bg-neutral-900 text-neutral-500 dark:text-neutral-400 border border-neutral-200 dark:border-white/5"
-                  }`}>
-                  {course.status}
-                </span>
+            <div className="pb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-black/5 dark:border-white/5">
+              <div>
+                <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
+                  {course.title}
+                </h1>
+                <div className="flex flex-wrap items-center gap-2.5 mt-3">
+                  <span className="px-3 py-1 bg-neutral-100 dark:bg-neutral-900 rounded-full text-xs font-black text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-white/5 uppercase tracking-wider">
+                    {course.category}
+                  </span>
+                  <span className={`px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ${course.status === "published"
+                    ? "bg-[#A3D14B]/15 text-[#A3D14B] border border-[#A3D14B]/20"
+                    : course.status === "draft" ? "bg-yellow-500/15 text-yellow-500 border border-yellow-500/20" :
+                      "bg-neutral-100 dark:bg-neutral-900 text-neutral-500 dark:text-neutral-400 border border-neutral-200 dark:border-white/5"
+                    }`}>
+                    {course.status}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <Link
+                  href={`/dashboard/admin/courses/${courseId}/preview`}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 border border-neutral-250 dark:border-white/10 hover:border-neutral-350 dark:hover:border-white/20 bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 hover:text-black dark:hover:text-white font-extrabold rounded-lg text-xs uppercase tracking-wider transition-all"
+                >
+                  <Eye className="w-4 h-4" />
+                  <span>Preview Course</span>
+                </Link>
               </div>
             </div>
 

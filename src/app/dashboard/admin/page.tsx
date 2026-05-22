@@ -458,6 +458,14 @@ export default function AdminDashboardPage() {
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-2">
                           <button
+                            onClick={() => router.push(`/dashboard/admin/courses/${course.id}/preview`)}
+                            className="p-2 text-neutral-550 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-xl transition-all cursor-pointer"
+                            title="Preview Course"
+                          >
+                            <Eye className="w-4.5 h-4.5" />
+                          </button>
+
+                          <button
                             onClick={() => router.push(`/dashboard/admin/courses/${course.id}`)}
                             className="p-2 text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-xl transition-all cursor-pointer"
                             title="Edit Syllabus & Content"
@@ -531,19 +539,27 @@ export default function AdminDashboardPage() {
                   </div>
 
                   <div className="border-t border-black/5 dark:border-white/5 pt-3 w-full">
-                    <div className="grid grid-cols-3 gap-2 w-full">
+                    <div className="grid grid-cols-2 gap-2 w-full">
                       <button
                         onClick={() => router.push(`/dashboard/admin/courses/${course.id}`)}
-                        className="flex items-center justify-center gap-1.5 py-2 text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white bg-neutral-100/70 dark:bg-neutral-900/60 hover:bg-neutral-200/80 dark:hover:bg-neutral-900 rounded-full text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer w-full"
+                        className="flex items-center justify-center gap-1.5 py-2.5 text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white bg-neutral-100/70 dark:bg-neutral-900/60 hover:bg-neutral-200/80 dark:hover:bg-neutral-900 rounded-full text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer w-full"
                         title="Edit Syllabus & Content"
                       >
                         <SlidersHorizontal className="w-3.5 h-3.5 shrink-0" />
                         <span>Edit</span>
                       </button>
                       <button
+                        onClick={() => router.push(`/dashboard/admin/courses/${course.id}/preview`)}
+                        className="flex items-center justify-center gap-1.5 py-2.5 text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white bg-neutral-100/70 dark:bg-neutral-900/60 hover:bg-neutral-200/80 dark:hover:bg-neutral-900 rounded-full text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer w-full"
+                        title="Preview Course"
+                      >
+                        <Eye className="w-3.5 h-3.5 shrink-0" />
+                        <span>Preview</span>
+                      </button>
+                      <button
                         onClick={() => requestTogglePublish(course)}
-                        className={`flex items-center justify-center gap-1.5 py-2 rounded-full text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer w-full ${course.status === "published"
-                          ? "text-yellow-600 dark:text-yellow-500 bg-yellow-50 dark:bg-yellow-950/20 hover:bg-yellow-100/70 dark:hover:bg-yellow-950/40"
+                        className={`flex items-center justify-center gap-1.5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer w-full ${course.status === "published"
+                          ? "text-yellow-650 dark:text-yellow-500 bg-yellow-50 dark:bg-yellow-950/20 hover:bg-yellow-100/70 dark:hover:bg-yellow-950/40"
                           : "text-[#A3D14B] bg-[#A3D14B]/15 hover:bg-[#A3D14B]/25"
                           }`}
                         title={course.status === "published" ? "Unpublish Course" : "Publish Course"}
@@ -557,7 +573,7 @@ export default function AdminDashboardPage() {
                       </button>
                       <button
                         onClick={() => requestDeleteCourse(course)}
-                        className="flex items-center justify-center gap-1.5 py-2 text-red-500 hover:text-red-600 bg-red-50 dark:bg-red-950/20 hover:bg-red-100/70 dark:hover:bg-red-950/40 rounded-full text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer w-full"
+                        className="flex items-center justify-center gap-1.5 py-2.5 text-red-500 hover:text-red-650 bg-red-50 dark:bg-red-950/20 hover:bg-red-100/70 dark:hover:bg-red-950/40 rounded-full text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer w-full"
                         title="Delete Course"
                       >
                         <Trash2 className="w-3.5 h-3.5 shrink-0" />
