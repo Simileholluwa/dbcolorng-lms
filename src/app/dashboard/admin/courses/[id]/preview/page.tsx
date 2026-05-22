@@ -51,36 +51,36 @@ type ActiveItem =
 
 function parseMarkdown(text: string): React.ReactNode[] {
   if (!text) return [];
-  
+
   const lines = text.split("\n");
   const elements: React.ReactNode[] = [];
-  
+
   let inList = false;
   let listItems: React.ReactNode[] = [];
-  
+
   let inCodeBlock = false;
   let codeBlockLines: string[] = [];
   let codeBlockLang = "";
-  
+
   let currentParagraphLines: string[] = [];
 
   // Helper to parse inline styles (bold, italic, inline code, links)
   const parseInline = (lineText: string): React.ReactNode => {
     const tokens: React.ReactNode[] = [];
     let lastIndex = 0;
-    
+
     // Regex matching bold, italic, code, links
     const regex = /(\*\*|__)(.*?)\1|(\*|_)(.*?)\3|`([^`]+)`|\[([^\]]+)\]\(([^)]+)\)/g;
     let match;
-    
+
     while ((match = regex.exec(lineText)) !== null) {
       const matchIndex = match.index;
-      
+
       // Add plain text before match
       if (matchIndex > lastIndex) {
         tokens.push(lineText.substring(lastIndex, matchIndex));
       }
-      
+
       if (match[1]) {
         tokens.push(<strong key={matchIndex} className="font-extrabold text-neutral-900 dark:text-neutral-50">{match[2]}</strong>);
       } else if (match[3]) {
@@ -94,14 +94,14 @@ function parseMarkdown(text: string): React.ReactNode[] {
           </a>
         );
       }
-      
+
       lastIndex = regex.lastIndex;
     }
-    
+
     if (lastIndex < lineText.length) {
       tokens.push(lineText.substring(lastIndex));
     }
-    
+
     return <>{tokens}</>;
   };
 
@@ -124,7 +124,7 @@ function parseMarkdown(text: string): React.ReactNode[] {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    
+
     // Code block toggle
     if (line.trim().startsWith("```")) {
       flushParagraph(`p-${i}`);
@@ -144,12 +144,12 @@ function parseMarkdown(text: string): React.ReactNode[] {
       }
       continue;
     }
-    
+
     if (inCodeBlock) {
       codeBlockLines.push(line);
       continue;
     }
-    
+
     // Unordered list item
     const listMatch = line.match(/^(\s*)[-*+]\s+(.*)/);
     if (listMatch) {
@@ -172,7 +172,7 @@ function parseMarkdown(text: string): React.ReactNode[] {
       );
       inList = false;
     }
-    
+
     // Headers
     const headerMatch = line.match(/^(#{1,6})\s+(.*)/);
     if (headerMatch) {
@@ -180,7 +180,7 @@ function parseMarkdown(text: string): React.ReactNode[] {
       const level = headerMatch[1].length;
       const content = parseInline(headerMatch[2]);
       const baseClass = "font-black tracking-tight text-neutral-900 dark:text-neutral-50 mt-6 mb-3";
-      
+
       if (level === 1) {
         elements.push(<h1 key={`h-${i}`} className={`text-2xl md:text-3xl ${baseClass}`}>{content}</h1>);
       } else if (level === 2) {
@@ -192,7 +192,7 @@ function parseMarkdown(text: string): React.ReactNode[] {
       }
       continue;
     }
-    
+
     // Blockquote
     const quoteMatch = line.match(/^>\s+(.*)/);
     if (quoteMatch) {
@@ -204,17 +204,17 @@ function parseMarkdown(text: string): React.ReactNode[] {
       );
       continue;
     }
-    
+
     // Empty line (paragraph break)
     if (line.trim() === "") {
       flushParagraph(`p-${i}`);
       continue;
     }
-    
+
     // Normal paragraph line
     currentParagraphLines.push(line);
   }
-  
+
   // Flush remaining elements
   flushParagraph("p-final");
   if (inList) {
@@ -231,7 +231,7 @@ function parseMarkdown(text: string): React.ReactNode[] {
       </pre>
     );
   }
-  
+
   return elements;
 }
 
@@ -541,8 +541,8 @@ export default function CoursePreviewPage({ params }: PreviewPageProps) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-50 dark:bg-neutral-950 text-black dark:text-white p-6">
         <Loader2 className="w-12 h-12 text-[#A3D14B] animate-spin mb-4" />
-        <p className="text-sm font-black uppercase tracking-widest text-neutral-900 dark:text-neutral-100">Loading Preview Player State...</p>
-        <span className="text-xs text-neutral-500 dark:text-neutral-500 mt-2">Resolving course curriculum, files, and quizzes</span>
+        <p className="text-sm font-black uppercase tracking-widest text-neutral-900 dark:text-neutral-100">Loading Course Preview...</p>
+        <span className="text-xs text-neutral-500 dark:text-neutral-500 mt-2">Preparing course curriculum, videos, and quizzes</span>
       </div>
     );
   }
@@ -603,15 +603,15 @@ export default function CoursePreviewPage({ params }: PreviewPageProps) {
               <div className="lg:col-span-2">
 
                 {/* Cover Banner Mockup */}
-                <div className="relative mb-8 aspect-video rounded-3xl overflow-hidden border border-black/5 dark:border-white/5 bg-gradient-to-tr from-neutral-900 via-neutral-850 to-neutral-950 flex flex-col justify-between p-6 md:p-8">
+                <div className="relative mb-8 aspect-video rounded-3xl overflow-hidden bg-gradient-to-tr from-neutral-900 via-neutral-850 to-neutral-950 flex flex-col justify-between p-6 md:p-8">
                   {course.thumbnail_url ? (
                     <>
                       <img
                         src={course.thumbnail_url}
                         alt={course.title}
-                        className="absolute inset-0 w-full h-full object-cover opacity-35 mix-blend-overlay hover:scale-105 transition-transform duration-700"
+                        className="absolute inset-0 w-full h-full object-cover opacity-60 hover:scale-105 transition-transform duration-700"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
                     </>
                   ) : (
                     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#A3D14B]/20 via-neutral-950/20 to-neutral-950 opacity-80" />
