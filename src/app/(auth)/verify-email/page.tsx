@@ -7,6 +7,15 @@ import { useAuth } from "@/presentation/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
+function LoadingIndicator() {
+  return (
+    <div className="flex flex-col items-center justify-center py-10 space-y-6">
+      <Loader2 className="w-10 h-10 animate-spin text-neutral-500" />
+      <p className="text-neutral-400 font-medium">Verifying your email address, please wait...</p>
+    </div>
+  );
+}
+
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -31,7 +40,7 @@ function VerifyEmailContent() {
         toast.success("Email verified!", {
           description: "Your email has been successfully verified.",
         });
-        const successUrl = redirectUrl 
+        const successUrl = redirectUrl
           ? `/verify-success?redirect_url=${encodeURIComponent(redirectUrl)}`
           : "/verify-success";
         router.push(successUrl);
@@ -44,14 +53,7 @@ function VerifyEmailContent() {
     verify();
   }, [oobCode, redirectUrl, confirmEmailVerification, router]);
 
-  return (
-    <div className="flex flex-col items-center justify-center py-10 space-y-6">
-      <Loader2 className="w-10 h-10 animate-spin text-neutral-800 dark:text-neutral-200" />
-      <p className="text-neutral-500 font-semibold animate-pulse">
-        Verifying your email address, please wait...
-      </p>
-    </div>
-  );
+  return <LoadingIndicator />;
 }
 
 export default function VerifyEmailPage() {
@@ -60,12 +62,7 @@ export default function VerifyEmailPage() {
       title="Verifying Email"
       subtitle="Connecting to authentication servers to verify your account."
     >
-      <React.Suspense fallback={
-        <div className="flex flex-col items-center justify-center py-10 space-y-6">
-          <Loader2 className="w-10 h-10 animate-spin text-neutral-500" />
-          <p className="text-neutral-400 font-medium">Loading...</p>
-        </div>
-      }>
+      <React.Suspense fallback={<LoadingIndicator />}>
         <VerifyEmailContent />
       </React.Suspense>
     </AuthLayout>
