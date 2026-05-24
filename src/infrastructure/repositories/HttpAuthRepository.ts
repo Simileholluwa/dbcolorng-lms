@@ -50,4 +50,10 @@ export class HttpAuthRepository implements AuthRepository {
       new_password: newPassword,
     });
   }
+
+  async confirmEmailVerification(oobCode: string): Promise<void> {
+    await apiClient.post("/auth/confirm-email", {
+      oob_code: oobCode,
+    });
+  }
 }

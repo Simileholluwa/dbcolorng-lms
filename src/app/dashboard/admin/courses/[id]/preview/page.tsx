@@ -597,7 +597,7 @@ export default function CoursePreviewPage({ params }: PreviewPageProps) {
         <div className="flex-1 overflow-y-auto w-full">
           <div className="max-w-6xl mx-auto px-4 py-8 md:py-12">
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
 
               {/* Left Content Area (Overview, Curriculum, details) */}
               <div className="lg:col-span-2">
@@ -855,7 +855,7 @@ export default function CoursePreviewPage({ params }: PreviewPageProps) {
               <div className="space-y-6">
 
                 {/* Course Purchase / Progress Simulation Widget */}
-                <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-3xl p-6 shadow-sm sticky">
+                <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-3xl p-6 shadow-sm sticky top-10 ">
                   <h3 className="font-extrabold text-neutral-800 dark:text-neutral-200 text-lg">Student Action Center</h3>
                   <p className="text-xs text-neutral-450 dark:text-neutral-500 mt-1">
                     Preview how student CTAs look and act.

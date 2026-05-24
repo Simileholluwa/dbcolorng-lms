@@ -116,6 +116,11 @@ export const useAuth = () => {
     },
   });
 
+  const confirmEmailVerificationMutation = useMutation({
+    mutationFn: ({ oobCode }: { oobCode: string }) =>
+      authRepository.confirmEmailVerification(oobCode),
+  });
+
   return {
     login: loginMutation.mutate,
     isLoggingIn: loginMutation.isPending,
@@ -127,6 +132,8 @@ export const useAuth = () => {
     isSendingForgotPassword: forgotPasswordMutation.isPending,
     confirmPasswordReset: confirmPasswordResetMutation.mutate,
     isConfirmingPasswordReset: confirmPasswordResetMutation.isPending,
+    confirmEmailVerification: confirmEmailVerificationMutation.mutateAsync,
+    isConfirmingEmail: confirmEmailVerificationMutation.isPending,
     logout,
   };
 };
