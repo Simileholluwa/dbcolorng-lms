@@ -9,9 +9,8 @@ import { toast } from "sonner";
 
 function LoadingIndicator() {
   return (
-    <div className="flex flex-col items-center justify-center py-10 space-y-6">
+    <div className="flex flex-col items-center justify-center pt-5">
       <Loader2 className="w-10 h-10 animate-spin text-neutral-500" />
-      <p className="text-neutral-400 font-medium">Verifying your email address, please wait...</p>
     </div>
   );
 }
