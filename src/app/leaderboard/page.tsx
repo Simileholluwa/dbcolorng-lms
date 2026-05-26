@@ -134,8 +134,30 @@ export default function LeaderboardPage() {
     <DashboardLayout>
       <div className="space-y-6 md:space-y-8 animate-fade-in">
 
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="flex-1">
+            <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
+              Leaderboard Rankings
+            </h1>
+            <p className="text-neutral-500 dark:text-neutral-400 mt-2 font-medium">
+              Compete with fellow designers, complete course challenges, and claim the top podium spot.
+            </p>
+          </div>
+
+          {!isAnyLoading && !isAnyError && (
+            <button
+              onClick={handleRetry}
+              className="flex items-center gap-2 self-start sm:self-center px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-450 hover:text-black dark:hover:text-white hover:border-neutral-300 dark:hover:border-neutral-700 transition-all cursor-pointer shadow-xs"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Refresh Rankings
+            </button>
+          )}
+        </div>
+
         {/* Header Navigation & Title */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white flex items-center gap-2.5">
               Leaderboard Rankings
@@ -154,7 +176,7 @@ export default function LeaderboardPage() {
               Refresh Rankings
             </button>
           )}
-        </div>
+        </div> */}
 
         {/* Error State View */}
         {isAnyError && (

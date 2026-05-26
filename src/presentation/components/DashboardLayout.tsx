@@ -4,6 +4,7 @@ import { ReactNode, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Bell,
   LogOut,
@@ -13,7 +14,9 @@ import {
   User as UserIcon,
   Shield,
   Sun,
-  Moon
+  Moon,
+  Menu,
+  X
 } from "lucide-react";
 import { useAuthStore } from "@/presentation/store/useAuthStore";
 import { useThemeStore } from "@/presentation/store/useThemeStore";
@@ -29,6 +32,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname();
 
   const [mounted, setMounted] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     setMounted(true);
@@ -138,65 +146,137 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </aside>
 
       {/* Mobile Header */}
-      <header className="lg:hidden flex items-center justify-between px-6 py-2 bg-white dark:bg-neutral-950 border-b border-black/5 dark:border-white/5 sticky top-0 z-50 transition-colors">
-        <Image src="/logo.png" alt="dbcolorsNG" width={64} height={64} className="w-16 h-16 object-contain" />
-        <div className="flex items-center gap-3">
-          {/* Mobile Light / Dark Switcher */}
+      <header className="lg:hidden flex items-center justify-between pl-6 pr-4 py-2 bg-white dark:bg-neutral-950 border-b border-black/5 dark:border-white/5 sticky top-0 z-50 transition-colors h-16">
+        <div className="flex items-center gap-2">
+          <Image src="/logo.png" alt="dbcolorsNG" width={48} height={48} className="w-14 h-14 object-contain" />
+        </div>
+
+        <div className="flex items-center gap-2">
           {mounted && (
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-400 dark:text-neutral-300 transition-all cursor-pointer"
+              className="p-1.5 mr-2 rounded-full border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-400 dark:text-neutral-300 transition-all cursor-pointer"
             >
               {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5 text-amber-400" />}
             </button>
           )}
 
-          <button
-            className="p-2 rounded-full border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-400 dark:text-neutral-300 transition-all cursor-pointer"
-          >
-            <Bell className="w-5 h-5" />
-          </button>
-
-          <button
-            onClick={logout}
-            className="p-2 rounded-full border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800 text-red-500 transition-all cursor-pointer"
-          >
-            <LogOut className="w-5 h-5" />
-          </button>
-
-          <div className="w-9 h-9 rounded-full overflow-hidden border border-black/10 dark:border-white/10">
+          <Link href="/profile" className="w-8 h-8 rounded-full overflow-hidden border border-black/10 dark:border-white/10 hover:scale-105 transition-transform block">
             {user.photo_url ? (
               <Image src={user.photo_url} alt={user.display_name} width={32} height={32} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full bg-[#A3D14B] flex items-center justify-center text-white font-bold text-sm">
-                {user.display_name[0] + user.display_name.split(' ').pop()?.[0]}
+              <div className="w-full h-full bg-[#A3D14B] flex items-center justify-center text-white font-bold text-xs">
+                {user.display_name[0] + (user.display_name.split(' ').pop()?.[0] || "")}
               </div>
             )}
-          </div>
+          </Link>
+
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="p-2 rounded-xl text-neutral-500 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all cursor-pointer"
+            title="Open Menu"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
         </div>
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-w-0 pb-24 lg:pb-0">
+      <main className="flex-1 flex flex-col min-w-0 pb-8 lg:pb-0">
         <div className="max-w-7xl w-full mx-auto px-6 lg:px-16 py-8 lg:py-12">
           {children}
         </div>
       </main>
 
-      {/* Mobile Bottom Navigation */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-neutral-950 border-t border-black/5 dark:border-white/5 px-4 py-2 z-50 flex justify-around items-center transition-colors">
-        {sidebarItems.map((item) => (
-          <Link
-            key={item.label}
-            href={item.href}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${item.active ? "text-black dark:text-white" : "text-neutral-400 dark:text-neutral-500"
-              }`}
-          >
-            <item.icon className="w-6 h-6" strokeWidth={item.active ? 2.5 : 2} />
-            <span className="text-[10px] font-bold tracking-tight">{item.label}</span>
-          </Link>
-        ))}
-      </nav>
+      {/* Mobile Drawer Menu Navigation */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 lg:hidden"
+            />
+
+            {/* Menu Drawer (Slides from Right) */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 220 }}
+              className="fixed top-0 bottom-0 right-0 w-[280px] bg-white dark:bg-neutral-950 border-l border-black/5 dark:border-white/5 z-50 flex flex-col p-4 transition-colors lg:hidden"
+            >
+              {/* Drawer Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-black/5 dark:border-white/5">
+                <div className="flex items-center gap-2">
+                  <Image src="/logo.png" alt="dbcolorsNG" width={48} height={48} className="w-14 h-14 object-contain" />
+                </div>
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 rounded-xl border border-black/5 dark:border-white/5 text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Navigation Section */}
+              <nav className="flex-1 py-6 space-y-1.5 overflow-y-auto scrollbar-hide">
+                {sidebarItems.map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all font-bold text-sm ${item.active
+                      ? "bg-black text-white dark:bg-[#A3D14B]/10 dark:text-primary"
+                      : "text-neutral-500 hover:text-black dark:hover:text-white hover:bg-neutral-50 dark:hover:bg-neutral-900/60"
+                      }`}
+                  >
+                    <item.icon className="w-5 h-5" strokeWidth={item.active ? 2.5 : 2} />
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
+              </nav>
+
+              {/* Drawer Footer Controls */}
+              <div className="border-t border-black/5 dark:border-white/5 pt-6 space-y-4">
+                {/* User info snippet */}
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-100 dark:border-neutral-900">
+                  <div className="w-10 h-10 rounded-full overflow-hidden border border-black/5 shrink-0">
+                    {user.photo_url ? (
+                      <Image src={user.photo_url} alt={user.display_name} width={40} height={40} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-[#A3D14B] flex items-center justify-center text-white font-bold text-sm">
+                        {user.display_name[0]}
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-black truncate text-neutral-900 dark:text-white">{user.display_name}</p>
+                    <p className="text-[10px] font-bold text-neutral-450 dark:text-neutral-500 uppercase tracking-wider">
+                      {isAdmin ? "Administrator" : "Student Learner"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Logout Button */}
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    logout();
+                  }}
+                  className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-bold text-sm text-red-500 hover:bg-red-500/5 dark:hover:bg-red-500/10 transition-all cursor-pointer"
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
