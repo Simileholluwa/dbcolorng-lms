@@ -27,7 +27,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {rightElement && (
-          <div className="absolute right-4 top-1/2 -translate-y-1/2">
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer w-5 h-5">
             {rightElement}
           </div>
         )}

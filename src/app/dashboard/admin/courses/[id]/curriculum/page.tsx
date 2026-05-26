@@ -494,7 +494,7 @@ export default function CurriculumPage({ params }: CurriculumPageProps) {
         </div>
 
         {/* Header Title */}
-        <div>
+        <div className="pb-2">
           <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white mt-3">
             {course?.title || "Loading Course..."}
           </h1>
@@ -504,10 +504,10 @@ export default function CurriculumPage({ params }: CurriculumPageProps) {
         </div>
 
         {/* Master Details Split View */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-8">
           {/* LEFT COLUMN: Modules & Syllabus Structure */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-lg p-4 shadow-xs">
+            <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-2xl p-4 shadow-xs">
               <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-4 mb-4">
                 <div className="flex items-center gap-2">
                   <Layers className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />
@@ -528,7 +528,7 @@ export default function CurriculumPage({ params }: CurriculumPageProps) {
                   <p className="mt-2 text-xs font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">Loading syllabus...</p>
                 </div>
               ) : modules.length === 0 ? (
-                <div className="text-center py-12 border-2 border-dashed border-neutral-100 dark:border-white/10 rounded-lg p-4">
+                <div className="text-center py-12 border-2 border-dashed border-neutral-100 dark:border-white/10 rounded-2xl p-4">
                   <FolderOpen className="w-8 h-8 text-neutral-350 dark:text-neutral-650 mx-auto mb-2" />
                   <h4 className="text-base font-extrabold text-neutral-700 dark:text-neutral-300">Syllabus is Empty</h4>
                   <p className="text-sm text-neutral-400 dark:text-neutral-500 mt-1 mx-auto">
@@ -556,7 +556,7 @@ export default function CurriculumPage({ params }: CurriculumPageProps) {
 
           {/* RIGHT COLUMN: Dynamic Workspace Context Form */}
           <div className="hidden lg:block lg:col-span-3">
-            <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-lg p-4 shadow-xs min-h-[400px] flex flex-col">
+            <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-2xl p-4 shadow-xs min-h-[400px] flex flex-col">
 
               {editorMode.type === "idle" && (
                 <div className="flex-1 flex flex-col items-center justify-center text-center py-12">

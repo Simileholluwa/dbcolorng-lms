@@ -386,18 +386,18 @@ export default function AdminDashboardPage() {
 
         {/* Main Courses Content Area */}
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center min-h-[300px] bg-white dark:bg-neutral-950 rounded-3xl border border-black/5 dark:border-white/5">
+          <div className="flex flex-col items-center justify-center min-h-[300px] bg-white dark:bg-neutral-950 rounded-2xl border border-black/5 dark:border-white/5">
             <Loader2 className="w-10 h-10 text-[#A3D14B] animate-spin" />
             <p className="mt-4 text-neutral-400 dark:text-neutral-500 font-bold tracking-wider uppercase text-xs">Loading Courses...</p>
           </div>
         ) : error ? (
-          <div className="flex flex-col items-center justify-center min-h-[300px] bg-red-50/50 dark:bg-red-950/20 rounded-3xl border border-red-100 dark:border-red-900/50">
+          <div className="flex flex-col items-center justify-center min-h-[300px] bg-red-50/50 dark:bg-red-950/20 rounded-2xl border border-red-100 dark:border-red-900/50">
             <XCircle className="w-12 h-12 text-red-500" />
             <h4 className="mt-4 font-bold text-red-900 dark:text-red-200 text-lg">Error Loading Data</h4>
             <p className="text-red-500 dark:text-red-400 text-sm mt-1">Make sure the backend server is running.</p>
           </div>
         ) : filteredCourses.length === 0 ? (
-          <div className="flex flex-col items-center justify-center min-h-[300px] bg-white dark:bg-neutral-950 rounded-3xl border border-black/5 dark:border-white/5 p-8 text-center">
+          <div className="flex flex-col items-center justify-center min-h-[300px] bg-white dark:bg-neutral-950 rounded-2xl border border-black/5 dark:border-white/5 p-8 text-center">
             <div className="p-4 bg-neutral-100 dark:bg-neutral-900 rounded-full text-neutral-400 dark:text-neutral-500 mb-4">
               <BookOpen className="w-8 h-8" />
             </div>
@@ -411,7 +411,7 @@ export default function AdminDashboardPage() {
         ) : (
           <div className="space-y-6">
             {/* Desktop Table View */}
-            <div className="hidden lg:block bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-lg overflow-hidden shadow-xs">
+            <div className="hidden lg:block bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-2xl overflow-hidden shadow-xs">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-black/5 dark:border-white/5 bg-neutral-50 dark:bg-neutral-900/50">

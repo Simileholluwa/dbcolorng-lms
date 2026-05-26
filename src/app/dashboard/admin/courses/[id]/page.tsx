@@ -141,12 +141,12 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
         </div>
 
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center min-h-[400px] bg-white rounded-lg dark:bg-neutral-950 border border-black/5 dark:border-white/5">
+          <div className="flex flex-col items-center justify-center min-h-[400px] bg-white rounded-2xl dark:bg-neutral-950 border border-black/5 dark:border-white/5">
             <Loader2 className="w-10 h-10 text-[#A3D14B] animate-spin" />
             <p className="mt-4 text-neutral-400 dark:text-neutral-500 font-bold tracking-wider uppercase text-xs">Loading course details...</p>
           </div>
         ) : error || !course ? (
-          <div className="flex flex-col items-center justify-center min-h-[400px] bg-red-50/50 dark:bg-red-950/20 rounded-lg border border-red-100 dark:border-red-900/50 p-6 text-center">
+          <div className="flex flex-col items-center justify-center min-h-[400px] bg-red-50/50 dark:bg-red-950/20 rounded-2xl border border-red-100 dark:border-red-900/50 p-6 text-center">
             <AlertCircle className="w-12 h-12 text-red-500" />
             <h4 className="mt-4 font-bold text-red-900 dark:text-red-200 text-lg">Course Not Found</h4>
             <p className="text-red-500 dark:text-red-400 text-sm mt-1 max-w-xs">
@@ -160,9 +160,9 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
             </Link>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-4 md:space-y-8">
             {/* Header info */}
-            <div className="pb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-black/5 dark:border-white/5">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
                   {course.title}
@@ -184,7 +184,7 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
               <div>
                 <Link
                   href={`/dashboard/admin/courses/${courseId}/preview`}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 border border-neutral-250 dark:border-white/10 hover:border-neutral-350 dark:hover:border-white/20 bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 hover:text-black dark:hover:text-white font-extrabold rounded-lg text-xs uppercase tracking-wider transition-all"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 border border-neutral-200 dark:border-white/10 hover:border-neutral-300 dark:hover:border-white/20 bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 hover:text-black dark:hover:text-white font-extrabold rounded-lg text-xs uppercase tracking-wider transition-all"
                 >
                   <Eye className="w-4 h-4" />
                   <span>Preview Course</span>
@@ -193,10 +193,10 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
             </div>
 
             {/* Content Columns */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
               {/* Left Column: Form Editor */}
               <div className="lg:col-span-2 space-y-6">
-                <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-xl p-4 shadow-xs">
+                <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-2xl p-4 shadow-xs">
                   <div className="flex items-center gap-3 border-b border-black/5 dark:border-white/5 pb-4 mb-4">
                     <Settings className="w-5 h-5 text-neutral-400 dark:text-neutral-500" />
                     <h3 className="font-extrabold text-neutral-800 dark:text-neutral-100 text-md">General Course Settings</h3>
@@ -318,9 +318,9 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
               </div>
 
               {/* Right Column: Previews for Phase 2 & 3 */}
-              <div className="space-y-4">
+              <div className="space-y-4 md:space-y-8">
                 {/* Phase 2: Curriculum Preview */}
-                <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-lg p-4 shadow-xs group">
+                <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-2xl p-4 shadow-xs group">
                   <div className="flex items-center gap-3 border-b border-black/5 dark:border-white/5 pb-4">
                     <Layers className="w-5 h-5 text-neutral-400 dark:text-neutral-500" />
                     <h3 className="font-extrabold text-neutral-800 dark:text-neutral-100 text-md">Course Syllabus</h3>
@@ -373,7 +373,7 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
                 </div>
 
                 {/* Phase 3: Quizzes Preview */}
-                <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-lg p-4 shadow-xs group">
+                <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-2xl p-4 shadow-xs group">
                   <div className="flex items-center gap-3 border-b border-black/5 dark:border-white/5 pb-4">
                     <Trophy className="w-5 h-5 text-neutral-400 dark:text-neutral-500" />
                     <h3 className="font-extrabold text-neutral-800 dark:text-neutral-100 text-md">Quizzes & Grading</h3>

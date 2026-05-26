@@ -89,7 +89,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 }`}
             >
               <item.icon className={`w-6 h-6 mb-1 ${item.active ? "text-[#A3D14B]" : "text-neutral-400 dark:text-neutral-500 group-hover:text-black dark:group-hover:text-white"}`} strokeWidth={item.active ? 2.5 : 2} />
-              <span className={`text-[9px] font-bold uppercase tracking-tight ${item.active ? "opacity-100 text-[#A3D14B]" : "opacity-80 group-hover:opacity-100 dark:text-neutral-400"}`}>
+              <span className={`text-[10px] font-bold tracking-tight ${item.active ? "opacity-100 text-[#A3D14B]" : "opacity-80 group-hover:opacity-100 dark:text-neutral-400"}`}>
                 {item.label}
               </span>
             </Link>
@@ -193,7 +193,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               }`}
           >
             <item.icon className="w-6 h-6" strokeWidth={item.active ? 2.5 : 2} />
-            <span className="text-[9px] font-bold tracking-tight uppercase">{item.label}</span>
+            <span className="text-[10px] font-bold tracking-tight">{item.label}</span>
           </Link>
         ))}
       </nav>

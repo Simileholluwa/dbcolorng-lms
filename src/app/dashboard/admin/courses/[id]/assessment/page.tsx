@@ -75,7 +75,7 @@ export default function AssessmentBuilderPage() {
   // Fetch quizzes for the selected target
   const targetId = selectedTarget?.id || "";
   const { data: quizzes, isLoading: loadingQuizzes } = useGetQuizzesByTarget(targetId);
-  const activeQuiz = quizzes?.[0]; // 1-to-1 mapping
+  const activeQuiz = quizzes?.[0];
 
   // Fetch questions for active quiz
   const quizId = activeQuiz?.id || "";
@@ -215,14 +215,14 @@ export default function AssessmentBuilderPage() {
         </div>
 
         {isLoadingWorkspace ? (
-          <div className="flex flex-col items-center justify-center min-h-[400px] bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-lg shadow-xs">
+          <div className="flex flex-col items-center justify-center min-h-[400px] bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-2xl shadow-xs">
             <Loader2 className="w-10 h-10 text-[#A3D14B] animate-spin" />
             <p className="mt-4 text-neutral-400 dark:text-neutral-500 font-bold tracking-wider uppercase text-xs">Loading Assessment Workspace...</p>
           </div>
         ) : (
           <div className="space-y-6">
             {/* Page Header */}
-            <div>
+            <div className="pb-2">
               <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white mt-3">
                 {course?.title || "Loading Course..."}
               </h1>
@@ -232,11 +232,11 @@ export default function AssessmentBuilderPage() {
             </div>
 
             {/* Split Layout Workspace */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-8 items-start">
 
               {/* Left Column: Assessment Target Selector */}
               <div className="lg:col-span-2 space-y-4 lg:sticky lg:top-20 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto pr-1">
-                <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-lg p-4 shadow-xs">
+                <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-2xl p-4 shadow-xs">
                   <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-4 mb-4">
                     <div className="flex items-center gap-2">
                       <ListChecks className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />
@@ -312,14 +312,14 @@ export default function AssessmentBuilderPage() {
 
                 {/* Loader when changing targets */}
                 {loadingQuizzes ? (
-                  <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-lg p-6 text-center shadow-xs">
+                  <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-2xl p-6 text-center shadow-xs">
                     <Loader2 className="w-8 h-8 text-[#A3D14B] animate-spin mx-auto" />
                     <p className="mt-3 text-xs text-neutral-400 dark:text-neutral-500 font-bold uppercase tracking-wider">Syncing Assessment details...</p>
                   </div>
                 ) : !activeQuiz ? (
 
                   /* EMPTY STATE: Create Quiz Shell Form */
-                  <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-lg p-6 shadow-xs text-center">
+                  <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-2xl p-6 shadow-xs text-center">
                     <HelpCircle className="w-8 h-8 text-neutral-350 dark:text-neutral-650 mx-auto mb-2" />
                     <h2 className="text-lg font-extrabold text-neutral-900 dark:text-white">No Quiz Created Yet</h2>
                     <p className="text-neutral-400 dark:text-neutral-500 text-xs font-semibold max-w-sm mx-auto mt-2 leading-relaxed">
@@ -391,10 +391,10 @@ export default function AssessmentBuilderPage() {
                 ) : (
 
                   /* ACTIVE WORKSPACE: Quiz Settings, Questions, Add Question Form */
-                  <div className="space-y-4">
+                  <div className="space-y-4 md:space-y-8">
 
                     {/* Active Quiz Details Panel */}
-                    <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-lg p-4 shadow-xs">
+                    <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-2xl p-4 shadow-xs">
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                         <div>
                           <h2 className="text-lg lg:text-xl font-extrabold text-neutral-900 dark:text-white">{activeQuiz.title}</h2>
@@ -434,7 +434,7 @@ export default function AssessmentBuilderPage() {
                     </div>
 
                     {/* Add Question Panel */}
-                    <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-lg p-4 shadow-xs">
+                    <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-2xl p-4 shadow-xs">
                       <div className="flex items-center gap-2 border-b border-black/5 dark:border-white/5 pb-4 mb-2">
                         <QuestionIcon className="w-4 h-4 text-neutral-400 dark:text-neutral-500" />
                         <h3 className="font-extrabold text-neutral-850 dark:text-neutral-100 text-md">Add a New Question</h3>
@@ -590,14 +590,14 @@ export default function AssessmentBuilderPage() {
                       <h3 className="font-extrabold text-neutral-800 dark:text-neutral-200 mt-8 text-sm uppercase tracking-wider">Quiz Questions List ({questions?.length || 0})</h3>
 
                       {loadingQuestions ? (
-                        <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-lg p-6 text-center">
+                        <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-2xl p-6 text-center">
                           <Loader2 className="w-6 h-6 text-[#A3D14B] animate-spin mx-auto" />
                           <p className="mt-2 text-[10px] text-neutral-400 dark:text-neutral-500 font-bold uppercase tracking-wider">Syncing Question Bank...</p>
                         </div>
                       ) : questions && questions.length > 0 ? (
                         <div className="space-y-4">
                           {questions.map((q, idx) => (
-                            <div key={q.id} className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-lg p-4 shadow-xs flex gap-4">
+                            <div key={q.id} className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-2xl p-4 shadow-xs flex gap-4">
                               <span className="w-7 h-7 bg-neutral-100 dark:bg-neutral-900 rounded-full border border-black/5 dark:border-white/5 text-xs font-black text-neutral-700 dark:text-neutral-400 flex items-center justify-center shrink-0">
                                 {idx + 1}
                               </span>
@@ -652,7 +652,7 @@ export default function AssessmentBuilderPage() {
                           ))}
                         </div>
                       ) : (
-                        <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-lg p-6 text-center text-neutral-400 dark:text-neutral-500 font-bold uppercase text-[10px] tracking-wider leading-relaxed">
+                        <div className="bg-white dark:bg-neutral-950 border border-black/5 dark:border-white/5 rounded-2xl p-6 text-center text-neutral-400 dark:text-neutral-500 font-bold uppercase text-[10px] tracking-wider leading-relaxed">
                           This assessment currently has no questions defined.<br />Use the builder above to append your first question!
                         </div>
                       )}
