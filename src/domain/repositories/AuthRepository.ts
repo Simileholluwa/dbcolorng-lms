@@ -8,4 +8,5 @@ export interface AuthRepository {
   getCurrentUser(): Promise<User | null>;
   confirmPasswordReset(oobCode: string, newPassword: string): Promise<void>;
   confirmEmailVerification(oobCode: string): Promise<void>;
+  updateProfile(displayName: string, photoUrl: string | null): Promise<User>;
 }

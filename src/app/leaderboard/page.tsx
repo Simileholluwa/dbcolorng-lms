@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import DashboardLayout from "@/presentation/components/DashboardLayout";
+import Loader from "@/presentation/components/ui/Loader";
 import { useAuthStore } from "@/presentation/store/useAuthStore";
 import { useLms } from "@/presentation/hooks/useLms";
 import {
@@ -13,15 +13,9 @@ import {
   Zap,
   Award,
   Search,
-  ChevronRight,
-  TrendingUp,
-  BookOpen,
-  ArrowLeft,
   Sparkles,
-  Loader2,
   AlertCircle,
   RefreshCw,
-  Star
 } from "lucide-react";
 
 interface BadgeConfig {
@@ -118,17 +112,16 @@ export default function LeaderboardPage() {
     topThree[2], // 3rd Place (Right)
   ].filter(Boolean);
 
-  const remainingRankings = filteredLeaderboard.slice(3);
-
-  // XP & Level calculations
-  const totalXp = profile?.total_xp ?? 0;
-  const currentLevel = profile?.level ?? 1;
-  const xpInCurrentLevel = totalXp % 100;
-  const progressToNextLevel = xpInCurrentLevel;
-  const xpNeededForNextLevel = 100 - xpInCurrentLevel;
-
   const isAnyLoading = isProfileLoading || isLeaderboardLoading;
   const isAnyError = isProfileError || isLeaderboardError;
+
+  if (isAnyLoading) {
+    return (
+      <DashboardLayout>
+        <Loader fullScreen size={120} />
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -156,28 +149,6 @@ export default function LeaderboardPage() {
           )}
         </div>
 
-        {/* Header Navigation & Title */}
-        {/* <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white flex items-center gap-2.5">
-              Leaderboard Rankings
-            </h1>
-            <p className="text-neutral-500 dark:text-neutral-400 text-sm mt-2 font-medium">
-              Compete with fellow designers, complete course challenges, and claim the top podium spot.
-            </p>
-          </div>
-
-          {!isAnyLoading && !isAnyError && (
-            <button
-              onClick={handleRetry}
-              className="flex items-center gap-2 self-start sm:self-center px-4 py-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-450 hover:text-black dark:hover:text-white hover:border-neutral-300 dark:hover:border-neutral-700 transition-all cursor-pointer shadow-xs"
-            >
-              <RefreshCw className="w-3.5 h-3.5" />
-              Refresh Rankings
-            </button>
-          )}
-        </div> */}
-
         {/* Error State View */}
         {isAnyError && (
           <div className="flex flex-col items-center justify-center p-12 text-center bg-red-500/5 rounded-2xl border border-red-500/10 text-red-500 max-w-md mx-auto space-y-4">
@@ -195,19 +166,7 @@ export default function LeaderboardPage() {
           </div>
         )}
 
-        {/* Loading Skeletons */}
-        {isAnyLoading && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-32 rounded-2xl bg-neutral-100 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-800/80 animate-pulse" />
-              ))}
-            </div>
-            <div className="h-96 rounded-2xl bg-neutral-100 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-800/80 animate-pulse" />
-          </div>
-        )}
-
-        {!isAnyLoading && !isAnyError && (
+        {!isAnyError && (
           <>
             {/* Podium Component Section */}
             {topThree.length > 0 && (
@@ -290,7 +249,7 @@ export default function LeaderboardPage() {
                           <p className={`text-xs sm:text-sm font-extrabold truncate ${isSelf ? 'text-primary' : 'text-neutral-900 dark:text-neutral-100'}`}>
                             {player.display_name || "Learner"}
                           </p>
-                          <p className="text-[9px] sm:text-[10px] font-bold text-neutral-400">Level {player.level}</p>
+                          <p className="text-[9px] sm:text-[10px] font-bold text-neutral-400">Level {Math.max(player.level ?? 1, Math.floor(player.total_xp / 100) + 1)}</p>
                         </div>
 
                         {/* Physical pedestal bar */}
@@ -406,7 +365,7 @@ export default function LeaderboardPage() {
                             {/* Level */}
                             <td className="px-6 py-4 text-center">
                               <span className="px-2.5 py-1 rounded-md bg-neutral-100 dark:bg-neutral-900 border border-neutral-200/50 dark:border-neutral-800/80 text-[10px] font-extrabold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-                                Lvl {item.level}
+                                Lvl {Math.max(item.level ?? 1, Math.floor(item.total_xp / 100) + 1)}
                               </span>
                             </td>
 

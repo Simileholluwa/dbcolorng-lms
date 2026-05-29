@@ -21,6 +21,39 @@ import {
 import { useAuthStore } from "@/presentation/store/useAuthStore";
 import { useThemeStore } from "@/presentation/store/useThemeStore";
 
+const isEmoji = (str: string | null | undefined): boolean => {
+  if (!str) return false;
+  return str.length <= 4 && !str.includes("/") && !str.includes(".");
+};
+
+const renderAvatar = (photoUrl: string | null | undefined, displayName: string, textClass: string) => {
+  if (!photoUrl) {
+    const initials = displayName ? displayName[0] : "?";
+    return (
+      <div className={`w-full h-full bg-[#A3D14B] flex items-center justify-center text-white font-bold ${textClass}`}>
+        {initials.toUpperCase()}
+      </div>
+    );
+  }
+  if (isEmoji(photoUrl)) {
+    return (
+      <div className="w-full h-full bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center select-none text-base">
+        {photoUrl}
+      </div>
+    );
+  }
+  return (
+    <img 
+      src={photoUrl} 
+      alt={displayName} 
+      className="w-full h-full object-cover" 
+      onError={(e) => {
+        (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(displayName)}&backgroundColor=A3D14B`;
+      }}
+    />
+  );
+};
+
 interface DashboardLayoutProps {
   children: ReactNode;
 }
@@ -133,14 +166,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <LogOut className="w-5 h-5" />
           </button>
 
-          <div className="w-10 h-10 rounded-full overflow-hidden border border-black/10 dark:border-white/10 cursor-pointer hover:scale-110 transition-transform">
-            {user.photo_url ? (
-              <Image src={user.photo_url} alt={user.display_name} width={40} height={40} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full bg-[#A3D14B] flex items-center justify-center text-white font-bold text-sm">
-                {user.display_name[0]}
-              </div>
-            )}
+          <div className="w-10 h-10 rounded-full overflow-hidden border border-black/10 dark:border-white/10 cursor-pointer hover:scale-110 transition-transform flex items-center justify-center bg-neutral-50 dark:bg-neutral-900/50">
+            {renderAvatar(user.photo_url, user.display_name, "text-sm")}
           </div>
         </div>
       </aside>
@@ -161,14 +188,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </button>
           )}
 
-          <Link href="/profile" className="w-8 h-8 rounded-full overflow-hidden border border-black/10 dark:border-white/10 hover:scale-105 transition-transform block">
-            {user.photo_url ? (
-              <Image src={user.photo_url} alt={user.display_name} width={32} height={32} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full bg-[#A3D14B] flex items-center justify-center text-white font-bold text-xs">
-                {user.display_name[0] + (user.display_name.split(' ').pop()?.[0] || "")}
-              </div>
-            )}
+          <Link href="/profile" className="w-8 h-8 rounded-full overflow-hidden border border-black/10 dark:border-white/10 hover:scale-105 transition-transform flex items-center justify-center bg-neutral-50 dark:bg-neutral-900/50 block">
+            {renderAvatar(user.photo_url, user.display_name, "text-xs")}
           </Link>
 
           <button
@@ -244,14 +265,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <div className="border-t border-black/5 dark:border-white/5 pt-6 space-y-4">
                 {/* User info snippet */}
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-100 dark:border-neutral-900">
-                  <div className="w-10 h-10 rounded-full overflow-hidden border border-black/5 shrink-0">
-                    {user.photo_url ? (
-                      <Image src={user.photo_url} alt={user.display_name} width={40} height={40} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-[#A3D14B] flex items-center justify-center text-white font-bold text-sm">
-                        {user.display_name[0]}
-                      </div>
-                    )}
+                  <div className="w-10 h-10 rounded-full overflow-hidden border border-black/5 shrink-0 flex items-center justify-center bg-neutral-50 dark:bg-neutral-900/50">
+                    {renderAvatar(user.photo_url, user.display_name, "text-sm")}
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs font-black truncate text-neutral-900 dark:text-white">{user.display_name}</p>

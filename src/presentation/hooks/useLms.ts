@@ -32,10 +32,18 @@ export const useLms = () => {
     });
   };
 
+  const useGetCertificates = () => {
+    return useQuery({
+      queryKey: ["lms-certificates"],
+      queryFn: () => lmsRepository.getCertificates(),
+    });
+  };
+
   return {
     useGetProfile,
     useGetLeaderboard,
     useGetEnrollments,
     useGetAnnouncements,
+    useGetCertificates,
   };
 };

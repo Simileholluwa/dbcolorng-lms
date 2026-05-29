@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import DashboardLayout from "@/presentation/components/DashboardLayout";
+import Loader from "@/presentation/components/ui/Loader";
 import { useAuthStore } from "@/presentation/store/useAuthStore";
 import { useLms } from "@/presentation/hooks/useLms";
 import { useCourses } from "@/presentation/hooks/useCourses";
@@ -194,7 +195,7 @@ function CourseSyllabusDrawer({
             <Link
               href={`/courses/${course.id}`}
               onClick={onClose}
-              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-primary text-black font-extrabold uppercase tracking-wider text-sm hover:scale-[1.01] transition-all cursor-pointer shadow-sm shadow-primary/20"
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-primary text-black dark:text-white font-extrabold uppercase tracking-wider text-sm hover:scale-[1.01] transition-all cursor-pointer shadow-sm shadow-primary/20"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
               Resume Learning
@@ -242,6 +243,14 @@ export default function ExplorePage() {
 
   // Selected course for the curriculum drawer
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+
+  if (coursesLoading || enrollmentsLoading) {
+    return (
+      <DashboardLayout>
+        <Loader fullScreen size={120} />
+      </DashboardLayout>
+    );
+  }
 
   // Dynamic filter category pills derived from course list
   const categories = ["All", ...Array.from(new Set(courses.map((c) => c.category)))];
@@ -351,16 +360,7 @@ export default function ExplorePage() {
         </div>
 
         {/* Catalog Grid */}
-        {coursesLoading || enrollmentsLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="h-80 rounded-2xl bg-neutral-100 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-800/80 animate-pulse"
-              />
-            ))}
-          </div>
-        ) : coursesError ? (
+        {coursesError ? (
           <div className="flex flex-col items-center justify-center p-12 text-center bg-red-500/5 rounded-2xl border border-red-500/10 text-red-500 max-w-md mx-auto space-y-4">
             <AlertCircle className="w-12 h-12 stroke-1" />
             <h3 className="font-extrabold text-lg">Failed to load courses</h3>
@@ -383,7 +383,7 @@ export default function ExplorePage() {
               return (
                 <div
                   key={course.id}
-                  className="group flex flex-col bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800/80 rounded-2xl overflow-hidden shadow-xs hover:shadow-md hover:border-primary/45 transition-all duration-300"
+                  className="group flex flex-col bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800/80 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300"
                 >
                   {/* Thumbnail / abstract banner */}
                   <div className="relative h-40 w-full bg-neutral-100 dark:bg-neutral-800 overflow-hidden flex-shrink-0">
@@ -404,14 +404,14 @@ export default function ExplorePage() {
                     )}
 
                     {/* Category overlay label */}
-                    <span className="absolute top-3 left-3 bg-neutral-950/85 backdrop-blur-xs text-white text-[10px] font-extrabold uppercase px-2 py-0.5 rounded border border-white/5">
+                    <span className="absolute top-3 left-3 bg-neutral-950/85 backdrop-blur-xs text-white text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-sm border border-white/5">
                       {course.category}
                     </span>
 
                     {/* Enrollment Status indicator */}
                     {isEnrolled && (
-                      <span className="absolute top-3 right-3 flex items-center gap-1 bg-emerald-500/20 backdrop-blur-xs text-emerald-400 text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded border border-emerald-500/30">
-                        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                      <span className="absolute top-3 right-3 flex items-center gap-1 bg-green-700 text-white text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-sm border border-emerald-500/30">
+                        <CheckCircle2 className="w-3 h-3 text-white" />
                         Enrolled
                       </span>
                     )}

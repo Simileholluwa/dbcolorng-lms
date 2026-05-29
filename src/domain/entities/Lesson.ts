@@ -8,4 +8,5 @@ export interface Lesson {
   body_text?: string;
   order: number;
   duration_seconds?: number;
+  duration?: number;
 }

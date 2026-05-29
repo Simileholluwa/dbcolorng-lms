@@ -14,6 +14,14 @@ export const useCourses = () => {
     });
   };
 
+  const useGetCourseById = (courseId: string) => {
+    return useQuery({
+      queryKey: ["course-details", courseId],
+      queryFn: () => courseRepository.getCourseById(courseId),
+      enabled: !!courseId,
+    });
+  };
+
   const useGetCourseModules = (courseId: string) => {
     return useQuery({
       queryKey: ["course-modules", courseId],
@@ -47,10 +55,94 @@ export const useCourses = () => {
     },
   });
 
+  const useGetQuizzesByTarget = (targetId: string) => {
+    return useQuery({
+      queryKey: ["quizzes", targetId],
+      queryFn: () => courseRepository.getQuizzesByTarget(targetId),
+      enabled: !!targetId,
+    });
+  };
+
+  const useGetQuizQuestions = (quizId: string) => {
+    return useQuery({
+      queryKey: ["quiz-questions", quizId],
+      queryFn: () => courseRepository.getQuizQuestions(quizId),
+      enabled: !!quizId,
+    });
+  };
+
+  const completeLessonMutation = useMutation({
+    mutationFn: (lessonId: string) => courseRepository.completeLesson(lessonId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lms-enrollments"] });
+      queryClient.invalidateQueries({ queryKey: ["lms-profile"] });
+      toast.success("Lesson Completed!", {
+        description: "You earned +10 XP!",
+      });
+    },
+    onError: (error: any) => {
+      toast.error("Failed to complete lesson", {
+        description: error.response?.data?.detail || "Please try again later.",
+      });
+    },
+  });
+
+  const submitQuizAttemptMutation = useMutation({
+    mutationFn: ({ quizId, answers }: { quizId: string; answers: Record<string, string> }) =>
+      courseRepository.submitQuizAttempt(quizId, answers),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["lms-profile"] });
+      queryClient.invalidateQueries({ queryKey: ["lms-enrollments"] });
+      if (data.passed) {
+        toast.success("Quiz Passed!", {
+          description: `Score: ${data.score}% - Great job!`,
+        });
+      } else {
+        toast.error("Quiz Failed", {
+          description: `Score: ${data.score}% - You can try again.`,
+        });
+      }
+    },
+    onError: (error: any) => {
+      toast.error("Failed to submit quiz", {
+        description: error.response?.data?.detail || "Please try again later.",
+      });
+    },
+  });
+
+  const useGetComments = (targetId: string) => {
+    return useQuery({
+      queryKey: ["discussion-comments", targetId],
+      queryFn: () => courseRepository.getCommentsByTarget(targetId),
+      enabled: !!targetId,
+    });
+  };
+
+  const postCommentMutation = useMutation({
+    mutationFn: ({ targetId, targetType, text, parentId }: { targetId: string; targetType: string; text: string; parentId?: string }) =>
+      courseRepository.postComment(targetId, targetType, text, parentId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["discussion-comments", variables.targetId] });
+      toast.success("Comment Posted!");
+    },
+    onError: (error: any) => {
+      toast.error("Failed to post comment", {
+        description: error.response?.data?.detail || "Please try again later.",
+      });
+    },
+  });
+
   return {
     useGetAllCourses,
+    useGetCourseById,
     useGetCourseModules,
     useGetModuleLessons,
     enrollInCourseMutation,
+    useGetQuizzesByTarget,
+    useGetQuizQuestions,
+    completeLessonMutation,
+    submitQuizAttemptMutation,
+    useGetComments,
+    postCommentMutation,
   };
 };

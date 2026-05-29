@@ -11,7 +11,7 @@ const loginUseCase = new LoginUseCase(authRepository);
 const registerUseCase = new RegisterUseCase(authRepository);
 
 export const useAuth = () => {
-  const { setAuth, logout } = useAuthStore();
+  const { setAuth, logout, updateUser } = useAuthStore();
   const router = useRouter();
 
   const loginMutation = useMutation({
@@ -121,6 +121,20 @@ export const useAuth = () => {
       authRepository.confirmEmailVerification(oobCode),
   });
 
+  const updateProfileMutation = useMutation({
+    mutationFn: ({ displayName, photoUrl }: { displayName: string; photoUrl: string | null }) =>
+      authRepository.updateProfile(displayName, photoUrl),
+    onSuccess: (updatedUser) => {
+      updateUser(updatedUser);
+      toast.success("Profile updated successfully!");
+    },
+    onError: (error: any) => {
+      toast.error("Failed to update profile", {
+        description: error.response?.data?.detail || "Something went wrong",
+      });
+    }
+  });
+
   return {
     login: loginMutation.mutate,
     isLoggingIn: loginMutation.isPending,
@@ -135,5 +149,7 @@ export const useAuth = () => {
     confirmEmailVerification: confirmEmailVerificationMutation.mutateAsync,
     isConfirmingEmail: confirmEmailVerificationMutation.isPending,
     logout,
+    updateProfile: updateProfileMutation.mutate,
+    isUpdatingProfile: updateProfileMutation.isPending
   };
 };

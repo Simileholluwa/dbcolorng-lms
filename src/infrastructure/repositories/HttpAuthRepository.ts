@@ -56,4 +56,12 @@ export class HttpAuthRepository implements AuthRepository {
       oob_code: oobCode,
     });
   }
+
+  async updateProfile(displayName: string, photoUrl: string | null): Promise<User> {
+    const response = await apiClient.put<User>("/auth/profile", {
+      display_name: displayName,
+      photo_url: photoUrl,
+    });
+    return response.data;
+  }
 }

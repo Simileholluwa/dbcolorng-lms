@@ -1,4 +1,4 @@
-import { LMSProfile, Enrollment, Announcement } from "../../domain/entities/LMS";
+import { LMSProfile, Enrollment, Announcement, Certificate } from "../../domain/entities/LMS";
 import { LmsRepository } from "../../domain/repositories/LmsRepository";
 import apiClient from "../api/client";
 
@@ -20,6 +20,11 @@ export class HttpLmsRepository implements LmsRepository {
 
   async getAnnouncements(): Promise<Announcement[]> {
     const response = await apiClient.get<Announcement[]>("/lms/me/announcements");
+    return response.data;
+  }
+
+  async getCertificates(): Promise<Certificate[]> {
+    const response = await apiClient.get<Certificate[]>("/lms/assessments/certificates");
     return response.data;
   }
 }

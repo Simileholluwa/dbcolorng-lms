@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import DashboardLayout from "@/presentation/components/DashboardLayout";
+import Loader from "@/presentation/components/ui/Loader";
 import { useAuthStore } from "@/presentation/store/useAuthStore";
 import { useLms } from "@/presentation/hooks/useLms";
 import {
@@ -148,13 +149,21 @@ export default function HomePage() {
 
   // XP & Level calculations
   const totalXp = profile?.total_xp ?? 0;
-  const currentLevel = profile?.level ?? 1;
+  const currentLevel = Math.max(profile?.level ?? 1, Math.floor(totalXp / 100) + 1);
   const xpInCurrentLevel = totalXp % 100;
   const progressToNextLevel = xpInCurrentLevel;
   const xpNeededForNextLevel = 100 - xpInCurrentLevel;
 
   const hasAnyError = isProfileError || isLeaderboardError || isEnrollmentsError || isAnnouncementsError;
   const isAnyLoading = isProfileLoading || isLeaderboardLoading || isEnrollmentsLoading || isAnnouncementsLoading;
+
+  if (isAnyLoading) {
+    return (
+      <DashboardLayout>
+        <Loader fullScreen size={120} />
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -183,9 +192,7 @@ export default function HomePage() {
           <div className="xl:col-span-2 space-y-4 md:space-y-8">
 
             {/* Welcome & XP Stats Card */}
-            {isProfileLoading ? (
-              <div className="h-64 rounded-2xl bg-neutral-100 dark:bg-neutral-900/60 animate-pulse border border-neutral-200/50 dark:border-neutral-800/80" />
-            ) : profile ? (
+            {profile ? (
               <div className="relative overflow-hidden rounded-2xl border border-neutral-200/60 dark:border-neutral-800/80 bg-neutral-900 text-white p-6 lg:p-8">
                 {/* Decorative background gradients */}
                 <div className="absolute top-0 right-0 w-80 h-80 bg-primary/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
@@ -221,10 +228,13 @@ export default function HomePage() {
                       </div>
                       <div className="w-full h-3 bg-neutral-800 rounded-full overflow-hidden border border-white/5">
                         <div
-                          className="h-full bg-primary rounded-full transition-all duration-1000 relative"
-                          style={{ width: `${progressToNextLevel}%` }}
+                          className="h-full animate-pulse rounded-full transition-all duration-1000 relative"
+                          style={{
+                            width: `${progressToNextLevel}%`,
+                            backgroundImage: "linear-gradient(to right, #A3D14B, #34D399)"
+                          }}
                         >
-                          <div className="absolute inset-0 bg-white/20 animate-pulse" />
+                          <div className="absolute inset-0 bg-white/10" />
                         </div>
                       </div>
                     </div>
@@ -317,9 +327,27 @@ export default function HomePage() {
               </div>
 
               {isEnrollmentsLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="h-56 rounded-xl bg-neutral-100 dark:bg-neutral-900/60 animate-pulse border border-neutral-200/50 dark:border-neutral-800/80" />
-                  <div className="h-56 rounded-xl bg-neutral-100 dark:bg-neutral-900/60 animate-pulse border border-neutral-200/50 dark:border-neutral-800/80" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-pulse">
+                  {[...Array(2)].map((_, i) => (
+                    <div key={i} className="flex flex-col bg-white dark:bg-neutral-900/40 border border-neutral-200/60 dark:border-neutral-800/80 rounded-xl overflow-hidden shadow-xs space-y-4 pb-5">
+                      <div className="h-32 w-full bg-neutral-150 dark:bg-neutral-850" />
+                      <div className="px-5 space-y-3 flex-1">
+                        <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded w-2/3" />
+                        <div className="h-3 bg-neutral-150 dark:bg-neutral-900 rounded w-5/6" />
+                        <div className="h-3 bg-neutral-150 dark:bg-neutral-900 rounded w-1/2" />
+                      </div>
+                      <div className="px-5 space-y-2">
+                        <div className="flex justify-between">
+                          <div className="h-3 w-24 bg-neutral-150 dark:bg-neutral-900 rounded" />
+                          <div className="h-3 w-8 bg-neutral-200 dark:bg-neutral-850 rounded" />
+                        </div>
+                        <div className="w-full h-2 bg-neutral-150 dark:bg-neutral-850 rounded-full" />
+                      </div>
+                      <div className="px-5">
+                        <div className="h-9 w-full bg-neutral-200 dark:bg-neutral-800 rounded-lg" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : enrollments && enrollments.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -328,7 +356,7 @@ export default function HomePage() {
                     return (
                       <div
                         key={item.id}
-                        className="group flex flex-col bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800/80 rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:border-primary/45 transition-all duration-300"
+                        className="group flex flex-col bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800/80 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
                       >
                         {/* Course Cover */}
                         <div className="relative h-32 w-full bg-neutral-100 dark:bg-neutral-800 overflow-hidden flex-shrink-0">
@@ -372,8 +400,11 @@ export default function HomePage() {
                             </div>
                             <div className="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden border border-black/5 dark:border-white/5">
                               <div
-                                className="h-full bg-primary rounded-full transition-all duration-700"
-                                style={{ width: `${progressPercent}%` }}
+                                className="h-full animate-pulse rounded-full transition-all duration-700"
+                                style={{
+                                  width: `${progressPercent}%`,
+                                  backgroundImage: "linear-gradient(to right, #A3D14B, #34D399)"
+                                }}
                               />
                             </div>
                           </div>
@@ -424,14 +455,18 @@ export default function HomePage() {
               </div>
 
               {isLeaderboardLoading ? (
-                <div className="space-y-4">
+                <div className="space-y-3.5 px-6 animate-pulse">
                   {[...Array(5)].map((_, i) => (
-                    <div key={i} className="flex items-center gap-3 animate-pulse">
-                      <div className="w-8 h-8 rounded-full bg-neutral-200 dark:bg-neutral-800" />
-                      <div className="flex-1 space-y-2">
-                        <div className="h-3.5 bg-neutral-200 dark:bg-neutral-800 rounded w-2/3" />
-                        <div className="h-2.5 bg-neutral-200 dark:bg-neutral-800 rounded w-1/3" />
+                    <div key={i} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="w-6 h-6 rounded-lg bg-neutral-200 dark:bg-neutral-850 flex-shrink-0" />
+                        <div className="w-9 h-9 rounded-full bg-neutral-200 dark:bg-neutral-805 flex-shrink-0" />
+                        <div className="space-y-2 flex-1 max-w-[120px]">
+                          <div className="h-3 bg-neutral-200 dark:bg-neutral-800 rounded w-full" />
+                          <div className="h-2.5 bg-neutral-150 dark:bg-neutral-900 rounded w-2/3" />
+                        </div>
                       </div>
+                      <div className="h-3.5 bg-neutral-200 dark:bg-neutral-800 rounded w-16" />
                     </div>
                   ))}
                 </div>
@@ -481,7 +516,7 @@ export default function HomePage() {
                             <p className={`text-sm font-bold truncate ${isCurrentUser ? 'text-[#A3D14B]' : 'text-neutral-700 dark:text-neutral-300'}`}>
                               {item.display_name || "Anonymous Learner"}
                             </p>
-                            <p className={`text-[10px] font-semibold ${isCurrentUser ? 'text-[#A3D14B]' : 'text-neutral-500'}`}>Level {item.level}{isCurrentUser ? ' | You' : ''}</p>
+                            <p className={`text-[10px] font-semibold ${isCurrentUser ? 'text-[#A3D14B]' : 'text-neutral-500'}`}>Level {Math.max(item.level ?? 1, Math.floor(item.total_xp / 100) + 1)}{isCurrentUser ? ' | You' : ''}</p>
                           </div>
                         </div>
 
@@ -506,12 +541,18 @@ export default function HomePage() {
               </h2>
 
               {isAnnouncementsLoading ? (
-                <div className="space-y-4">
+                <div className="relative border-l border-neutral-200 dark:border-neutral-800 pl-4 ml-2 space-y-6 animate-pulse">
                   {[...Array(3)].map((_, i) => (
-                    <div key={i} className="space-y-2 animate-pulse">
-                      <div className="h-4 bg-neutral-200 dark:bg-neutral-800 rounded w-3/4" />
-                      <div className="h-3 bg-neutral-200 dark:bg-neutral-800 rounded w-1/2" />
-                      <div className="h-10 bg-neutral-200 dark:bg-neutral-800 rounded w-full" />
+                    <div key={i} className="relative space-y-2">
+                      <div className="absolute -left-[25px] top-1.5 w-4 h-4 rounded-full border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900" />
+                      <div className="space-y-2">
+                        <div className="flex justify-between gap-4">
+                          <div className="h-3.5 bg-neutral-200 dark:bg-neutral-800 rounded w-1/2" />
+                          <div className="h-3 bg-neutral-150 dark:bg-neutral-900 rounded w-12" />
+                        </div>
+                        <div className="h-3 bg-neutral-150 dark:bg-neutral-900 rounded w-full" />
+                        <div className="h-3 bg-neutral-150 dark:bg-neutral-900 rounded w-5/6" />
+                      </div>
                     </div>
                   ))}
                 </div>

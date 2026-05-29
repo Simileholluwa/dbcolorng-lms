@@ -1,18 +1,12 @@
+import { Lesson } from "./Lesson";
+export type { Lesson };
+
 export interface Module {
   id: string;
   title: string;
   description: string;
   order: number;
   lessons: Lesson[];
-}
-
-export interface Lesson {
-  id: string;
-  title: string;
-  content: string;
-  type: "video" | "text" | "quiz";
-  order: number;
-  duration?: number; // in minutes
 }
 
 export interface Course {

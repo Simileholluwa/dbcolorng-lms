@@ -16,6 +16,8 @@ export interface Enrollment {
   course_id: string;
   status: "active" | "completed";
   completed_lessons: string[];
+  completed_quiz_ids: string[];
+  completed_module_ids: string[];
   progress_percent: number;
   enrolled_at: number;
   completed_at?: number;
@@ -31,4 +33,12 @@ export interface Announcement {
   is_pinned: boolean;
   created_at: number;
   updated_at: number;
+}
+
+export interface Certificate {
+  id: string;
+  course_title: string;
+  user_display_name: string;
+  issued_at: number; // Unix timestamp
+  verification_code: string;
 }
